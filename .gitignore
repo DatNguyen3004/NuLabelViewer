@@ -1,6 +1,6 @@
 # Lờ thư mục chứa dataset nặng
 /data/
-/dataset/
+static/dataset/
 /nuScenes/
 
 # Lờ môi trường ảo python
