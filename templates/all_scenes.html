@@ -1,0 +1,27 @@
+<h2>Danh sách 412 bộ dữ liệu</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Sample Token</th>
+            <th>Ảnh minh họa (Front)</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for scene in scenes %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td><code>{{ scene[0] }}</code></td>
+            <td>
+                <img src="{{ url_for('static', filename='Dataset/v1.0-mini/v1.0-mini/' + scene[1]) }}" width="100">
+            </td>
+            <td>
+                <a href="/workspace?token={{ scene[0] }}">
+                    <button>Vào Workspace</button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

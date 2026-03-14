@@ -32,9 +32,9 @@
         <nav class="nav flex-column flex-grow-1">
             <a class="nav-link active" href="#"><i class="fa-solid fa-border-all me-3"></i>Bảng điều khiển</a>
             <a class="nav-link" href="#"><i class="fa-solid fa-folder me-3"></i>Dự án</a>
-            <a class="nav-link d-flex justify-content-between align-items-center" href="#">
+            <a class="nav-link d-flex justify-content-between align-items-center" href="/workspace">
                 <span><i class="fa-solid fa-file-signature me-3"></i>Hàng chờ duyệt</span>
-                <span class="badge rounded-pill bg-success opacity-75">12</span>
+                <span class="badge rounded-pill bg-success opacity-75">{{ queue }}</span>
             </a>
             <a class="nav-link" href="#"><i class="fa-solid fa-chart-simple me-3"></i>Báo cáo</a>
             <a class="nav-link" href="#"><i class="fa-solid fa-gear me-3"></i>Cài đặt</a>
@@ -74,40 +74,40 @@
                 <div class="card stat-card p-4 shadow-sm">
                     <div class="d-flex justify-content-between mb-3">
                         <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-car text-muted"></i></div>
-                        <span class="growth-tag tag-up"><i class="fa-solid fa-car me-1"></i> 12%</span>
+                        <span class="growth-tag tag-up"><i class="fa-solid fa-car me-1"></i>{{ stats.cars.pct }}%</span>
                     </div>
                     <small class="text-muted">Ô tô</small>
-                    <h3 class="fw-bold mb-0">8,420</h3>
+                    <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.cars.count) }}</h3>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card p-4 shadow-sm">
                     <div class="d-flex justify-content-between mb-3">
                         <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-person-walking text-muted"></i></div>
-                        <span class="growth-tag tag-up"><i class="fa-solid fa-arrow-up me-1"></i> 5%</span>
+                        <span class="growth-tag tag-up"><i class="fa-solid fa-person-walking me-1"></i>{{ stats.peds.pct }}%</span>
                     </div>
                     <small class="text-muted">Người đi bộ</small>
-                    <h3 class="fw-bold mb-0">2,150</h3>
+                    <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.peds.count) }}</h3>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card p-4 shadow-sm">
                     <div class="d-flex justify-content-between mb-3">
                         <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-truck text-muted"></i></div>
-                        <span class="growth-tag tag-down"><i class="fa-solid fa-truck me-1"></i> 2%</span>
+                        <span class="growth-tag tag-down"><i class="fa-solid fa-truck me-1"></i>{{ stats.trucks.pct }}%</span>
                     </div>
                     <small class="text-muted">Xe tải</small>
-                    <h3 class="fw-bold mb-0">1,630</h3>
+                    <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.trucks.count) }}</h3>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card p-4 shadow-sm">
                     <div class="d-flex justify-content-between mb-3">
                         <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-bicycle text-muted"></i></div>
-                        <span class="growth-tag tag-up"><i class="fa-solid fa-bicycle me-1"></i> 8%</span>
+                        <span class="growth-tag tag-up"><i class="fa-solid fa-bicycle me-1"></i>{{ stats.bikes.pct }}%</span>
                     </div>
                     <small class="text-muted">Xe đạp</small>
-                    <h3 class="fw-bold mb-0">640</h3>
+                    <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.bikes.count) }}</h3>
                 </div>
             </div>
         </div>
@@ -116,7 +116,7 @@
             <div class="card-body p-0">
                 <div class="d-flex justify-content-between align-items-center p-4">
                     <h5 class="fw-bold mb-0">Hoạt động gần đây</h5>
-                    <a href="#" class="text-success text-decoration-none small fw-bold">Xem tất cả hoạt động</a>
+                    <a href="/all-scenes" class="text-success text-decoration-none small fw-bold">Xem tất cả hoạt động</a>
                 </div>
                 <table class="table align-middle mb-0">
                     <thead class="bg-light">
@@ -130,38 +130,34 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for item in history %}
                         <tr>
-                            <td class="ps-4 text-muted">#B-88241</td>
-                            <td><span class="text-primary fs-4 me-2">•</span><strong>scene-0001</strong></td>
-                            <td>Sarah Jenkins</td>
-                            <td><span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem;">Đã xác minh</span></td>
-                            <td class="text-muted small">phút trước</td>
+                            <td class="ps-4 text-muted">#{{ item.SampleToken[:8] }}</td>
+                            <td>
+                                <span class="text-primary fs-4 me-2">•</span>
+                                <strong>{{ item.SampleToken[:15] }}...</strong>
+                            </td>
+                            <td>Alex Rivera</td> <td>
+                                {% if item.ReviewStatus == 1 %}
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem;">Đã xác minh</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem;">PHÁT HIỆN LỖI</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small">
+                                {% if item.DiffMinutes is none or item.DiffMinutes >= 999 %}
+                                    N/A
+                                {% elif item.DiffMinutes < 1 %} 
+                                    Vừa xong
+                                {% elif item.DiffMinutes < 60 %} 
+                                    {{ item.DiffMinutes }} phút trước
+                                {% else %} 
+                                    {{ (item.DiffMinutes // 60) }} giờ trước
+                                {% endif %}
+                            </td>
                             <td class="text-center text-muted"><i class="fa-solid fa-ellipsis"></i></td>
                         </tr>
-                        <tr>
-                            <td class="ps-4 text-muted">#B-88239</td>
-                            <td><span class="text-warning fs-4 me-2">•</span><strong>scene-0042</strong></td>
-                            <td>Mark Thompson</td>
-                            <td><span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem;">PHÁT HIỆN LỖI</span></td>
-                            <td class="text-muted small">phút trước</td>
-                            <td class="text-center text-muted"><i class="fa-solid fa-ellipsis"></i></td>
-                        </tr>
-                        <tr>
-                            <td class="ps-4 text-muted">#B-88235</td>
-                            <td><span class="fs-4 me-2" style="color: #9c27b0;">•</span><strong>scene-0103</strong></td>
-                            <td>Alex Rivera</td>
-                            <td><span class="badge bg-light text-dark border rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem; background-color: #f0f2f5 !important;">Đang chờ</span></td>
-                            <td class="text-muted small">phút trước</td>
-                            <td class="text-center text-muted"><i class="fa-solid fa-ellipsis"></i></td>
-                        </tr>
-                        <tr>
-                            <td class="ps-4 text-muted">#B-88231</td>
-                            <td><span class="text-primary fs-4 me-2">•</span><strong>scene-0089</strong></td>
-                            <td>Sarah Jenkins</td>
-                            <td><span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem;">Đã xác minh</span></td>
-                            <td class="text-muted small">1 giờ trước</td>
-                            <td class="text-center text-muted"><i class="fa-solid fa-ellipsis"></i></td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
                 <div class="text-center py-3 border-top">

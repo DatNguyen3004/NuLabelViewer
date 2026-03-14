@@ -18,5 +18,20 @@ CREATE TABLE Annotations (
     X_Coord FLOAT, Y_Coord FLOAT, Width FLOAT, Height FLOAT,
     ReviewStatus INT DEFAULT 0, -- 0: Chưa xem, 1: Đúng, 2: Sai
     Note NVARCHAR(MAX),
+	ReviewDate DATETIME DEFAULT GETDATE(),
     CONSTRAINT FK_Scene FOREIGN KEY (SampleToken) REFERENCES Scenes(SampleToken)
 );
+
+-- Bảng 3: Tạo bảng lưu số lượng đối tượng đã được kiểm tra
+CREATE TABLE ObjectLabels (
+    ObjID INT PRIMARY KEY IDENTITY(1,1),
+    SampleToken VARCHAR(100),
+    Category VARCHAR(50),
+    InstanceToken VARCHAR(100),
+    CONSTRAINT FK_Object_Scene FOREIGN KEY (SampleToken) REFERENCES Scenes(SampleToken)
+);
+
+drop table Scenes
+drop table Annotations
+
+select * from Scenes
