@@ -1,0 +1,9 @@
+# Lờ thư mục chứa dataset nặng
+/data/
+/dataset/
+/nuScenes/
+
+# Lờ môi trường ảo python
+venv/
+__pycache__/
+.env
