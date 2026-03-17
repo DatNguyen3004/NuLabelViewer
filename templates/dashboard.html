@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,167 +8,189 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
 </head>
+
 <body>
 
-<div class="d-flex">
-    <div class="sidebar py-4">
-        <div class="px-4 mb-4 d-flex align-items-center">
-            <h4 class="mb-0 fw-bold">NuLabel <span class="fw-light text-muted">Viewer</span></h4>
-        </div>
-        
-        <nav class="nav flex-column flex-grow-1">
-            <a class="nav-link active" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-border-all me-3"></i>Trang chủ</a>
-            <a class="nav-link d-flex justify-content-between align-items-center" href="{{ url_for('analytics') }}">
-                <span><i class="fa-solid fa-file-signature me-3"></i>Hàng chờ duyệt</span>
-                <span class="badge rounded-pill bg-success opacity-75">{{ queue }}</span>
-            </a>
-            <a class="nav-link" href="{{ url_for('errors') }}"><i class="fa-solid fa-chart-simple me-3"></i>Báo cáo</a>
-        </nav>
+    <div class="d-flex">
+        <div class="sidebar py-4">
+            <div class="px-2 mb-4 d-flex align-items-center">
+                <img src="{{ url_for('static', filename='favicon/favicon.ico') }}" class="logo-a-inner"
+                    alt="NuLabel Logo">
+                <h4 class="mb-0 fw-bold">NuLabel <span class="fw-light text-muted">Viewer</span></h4>
+            </div>
 
-        <div class="mt-auto px-4 py-3 border-top d-flex align-items-center">
-    <img src="https://ui-avatars.com/api/?name={{ user_info.full_name | replace(' ', '+') }}&background=random&color=fff" 
-         class="rounded-circle me-3" width="40" alt="User Avatar">
-    
-    <div class="user-info">
-        <p class="mb-0 fw-bold small text-dark">{{ user_info.full_name }}</p>
-        <small class="text-muted" style="font-size: 0.7rem;">{{ user_info.role }}</small>
-    </div>
+            <nav class="nav flex-column flex-grow-1">
+                <a class="nav-link active" href="{{ url_for('dashboard') }}"><i
+                        class="fa-solid fa-border-all me-3"></i>Trang chủ</a>
+                <a class="nav-link d-flex justify-content-between align-items-center" href="{{ url_for('analytics') }}">
+                    <span><i class="fa-solid fa-file-signature me-3"></i>Hàng chờ duyệt</span>
+                    <span class="badge rounded-pill bg-success opacity-75">{{ queue }}</span>
+                </a>
+                <a class="nav-link" href="{{ url_for('errors') }}"><i class="fa-solid fa-chart-simple me-3"></i>Báo
+                    cáo</a>
+            </nav>
 
-    <a href="{{ url_for('logout') }}" class="ms-auto logout-btn d-flex align-items-center justify-content-center" title="Đăng xuất">
-        <i class="fa-solid fa-right-from-bracket"></i>
-    </a>
-</div>
-    </div>
+            <div class="mt-auto px-4 py-3 border-top d-flex align-items-center">
+                <img src="https://ui-avatars.com/api/?name={{ user_info.full_name | replace(' ', '+') }}&background=random&color=fff"
+                    class="rounded-circle me-3" width="40" alt="User Avatar">
 
-    <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-5">
-            <form action="{{ url_for('search') }}" method="GET" class="flex-grow-1 mx-4">
-    <div class="input-group" style="background-color: #f1f3f4; border-radius: 12px; overflow: hidden;">
-        <span class="input-group-text border-0 bg-transparent text-muted ps-3">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </span>
-        <input type="text" name="q" class="form-control border-0 bg-transparent py-2 px-1" 
-               placeholder="Tìm kiếm tên các nhãn, lô hoặc dự án..." 
-               aria-label="Search">
-    </div>
-</form>
-            <div class="d-flex gap-3">
-                <button class="btn btn-light rounded-circle"><i class="fa-regular fa-bell"></i></button>
-                <button class="btn btn-light rounded-circle"><i class="fa-regular fa-circle-question"></i></button>
+                <div class="user-info">
+                    <p class="mb-0 fw-bold small text-dark">{{ user_info.full_name }}</p>
+                    <small class="text-muted" style="font-size: 0.7rem;">{{ user_info.role }}</small>
+                </div>
+
+                <a href="{{ url_for('logout') }}"
+                    class="ms-auto logout-btn d-flex align-items-center justify-content-center" title="Đăng xuất">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
             </div>
         </div>
 
-        <div class="d-flex justify-content-between align-items-end mb-4">
-            <div>
-                <h2 class="fw-bold">Tổng quan hệ thống</h2>
-                <p class="text-muted">Chào buổi sáng, Alex. Quy trình dán nhãn của bạn đang hoạt động <span class="text-success fw-bold">tốt</span>.</p>
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <form action="{{ url_for('search') }}" method="GET" class="flex-grow-1 mx-4">
+                    <div class="input-group" style="background-color: #f1f3f4; border-radius: 12px; overflow: hidden;">
+                        <span class="input-group-text border-0 bg-transparent text-muted ps-3">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" name="q" class="form-control border-0 bg-transparent py-2 px-1"
+                            placeholder="Tìm kiếm tên các nhãn, lô hoặc dự án..." aria-label="Search">
+                    </div>
+                </form>
+                <div class="d-flex gap-3">
+                    <button class="btn btn-light rounded-circle"><i class="fa-regular fa-bell"></i></button>
+                    <button class="btn btn-light rounded-circle"><i class="fa-regular fa-circle-question"></i></button>
+                </div>
             </div>
-                <a href="{{ url_for('analytics') }}" class="btn btn-success fw-bold px-4 py-3 shadow-sm" style="background-color: #087341; border: none; border-radius: 10px;">
+
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h2 class="fw-bold">Tổng quan hệ thống</h2>
+                    <p class="text-muted">Chào buổi sáng, Alex. Quy trình dán nhãn của bạn đang hoạt động <span
+                            class="text-success fw-bold">tốt</span>.</p>
+                </div>
+                <a href="{{ url_for('analytics') }}" class="btn btn-success fw-bold px-4 py-3 shadow-sm"
+                    style="background-color: #087341; border: none; border-radius: 10px;">
                     <i class="fa-solid fa-play me-2"></i> Bắt đầu kiểm định
                 </a>
-        </div>
+            </div>
 
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
-                <div class="card stat-card p-4 shadow-sm">
-                    <div class="d-flex justify-content-between mb-3">
-                        <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-car text-muted"></i></div>
-                        <span class="growth-tag tag-up"><i class="fa-solid fa-car me-1"></i>{{ stats.cars.pct }}%</span>
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="card stat-card p-4 shadow-sm">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-car text-muted"></i></div>
+                            <span class="growth-tag tag-up"><i class="fa-solid fa-car me-1"></i>{{ stats.cars.pct
+                                }}%</span>
+                        </div>
+                        <small class="text-muted">Ô tô</small>
+                        <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.cars.count) }}</h3>
                     </div>
-                    <small class="text-muted">Ô tô</small>
-                    <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.cars.count) }}</h3>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card p-4 shadow-sm">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-person-walking text-muted"></i>
+                            </div>
+                            <span class="growth-tag tag-up"><i class="fa-solid fa-person-walking me-1"></i>{{
+                                stats.peds.pct }}%</span>
+                        </div>
+                        <small class="text-muted">Người đi bộ</small>
+                        <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.peds.count) }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card p-4 shadow-sm">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-truck text-muted"></i></div>
+                            <span class="growth-tag tag-down"><i class="fa-solid fa-truck me-1"></i>{{ stats.trucks.pct
+                                }}%</span>
+                        </div>
+                        <small class="text-muted">Xe tải</small>
+                        <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.trucks.count) }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card p-4 shadow-sm">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-bicycle text-muted"></i></div>
+                            <span class="growth-tag tag-up"><i class="fa-solid fa-bicycle me-1"></i>{{ stats.bikes.pct
+                                }}%</span>
+                        </div>
+                        <small class="text-muted">Xe đạp</small>
+                        <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.bikes.count) }}</h3>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card p-4 shadow-sm">
-                    <div class="d-flex justify-content-between mb-3">
-                        <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-person-walking text-muted"></i></div>
-                        <span class="growth-tag tag-up"><i class="fa-solid fa-person-walking me-1"></i>{{ stats.peds.pct }}%</span>
-                    </div>
-                    <small class="text-muted">Người đi bộ</small>
-                    <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.peds.count) }}</h3>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card stat-card p-4 shadow-sm">
-                    <div class="d-flex justify-content-between mb-3">
-                        <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-truck text-muted"></i></div>
-                        <span class="growth-tag tag-down"><i class="fa-solid fa-truck me-1"></i>{{ stats.trucks.pct }}%</span>
-                    </div>
-                    <small class="text-muted">Xe tải</small>
-                    <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.trucks.count) }}</h3>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card stat-card p-4 shadow-sm">
-                    <div class="d-flex justify-content-between mb-3">
-                        <div class="bg-light p-2 rounded-3"><i class="fa-solid fa-bicycle text-muted"></i></div>
-                        <span class="growth-tag tag-up"><i class="fa-solid fa-bicycle me-1"></i>{{ stats.bikes.pct }}%</span>
-                    </div>
-                    <small class="text-muted">Xe đạp</small>
-                    <h3 class="fw-bold mb-0">{{ "{:,}".format(stats.bikes.count) }}</h3>
-                </div>
-            </div>
-        </div>
 
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-            <div class="card-body p-0">
-                <div class="d-flex justify-content-between align-items-center p-4">
-                    <h5 class="fw-bold mb-0">Hoạt động gần đây</h5>
-                    <a href="/all-scenes" class="text-success text-decoration-none small fw-bold">Xem tập dữ liệu</a>
-                </div>
-                <table class="table align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr class="text-muted small">
-                            <th class="ps-4">MÃ MẪU</th>
-                            <th>DỰ ÁN</th>
-                            <th>NGƯỜI GÁN NHÃN</th>
-                            <th>TRẠNG THÁI</th>
-                            <th>THỜI GIAN</th>
-                            <th class="text-center">HÀNH ĐỘNG</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in history %}
-                        <tr>
-                            <td class="ps-4 text-muted">#{{ item.SampleToken[:8] }}</td>
-                            <td>
-                                <span class="text-primary fs-4 me-2">•</span>
-                                <strong>{{ item.SampleToken[:15] }}...</strong>
-                            </td>
-                            <td>Alex Rivera</td>
-                            <td>
-                                {% if item.ReviewStatus == 1 %}
-                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem;">Đã xác minh</span>
-                                {% else %}
-                                    <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem;">PHÁT HIỆN LỖI</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-muted small">
-                                {% if item.DiffMinutes is none or item.DiffMinutes >= 999 %}
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="d-flex justify-content-between align-items-center p-4">
+                        <h5 class="fw-bold mb-0">Hoạt động gần đây</h5>
+                        <a href="/all-scenes" class="text-success text-decoration-none small fw-bold">Xem tập dữ
+                            liệu</a>
+                    </div>
+                    <p class="px-4 text-secondary">Cập nhật trạng thái dán nhãn thời gian thực</p>
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr class="text-muted small bg-secondary">
+                                <th class="ps-4">MÃ MẪU</th>
+                                <th>DỰ ÁN</th>
+                                <th>NGƯỜI GÁN NHÃN</th>
+                                <th>TRẠNG THÁI</th>
+                                <th>THỜI GIAN</th>
+                                <th class="text-center">HÀNH ĐỘNG</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in history %}
+                            <tr>
+                                <td class="ps-4 text-muted">#{{ item.SampleToken[:8] }}</td>
+                                <td>
+                                    <span class="text-primary fs-4 me-2">•</span>
+                                    <strong>{{ item.SampleToken[:15] }}...</strong>
+                                </td>
+                                <td>Alex Rivera</td>
+                                <td>
+                                    {% if item.ReviewStatus == 1 %}
+                                    <span
+                                        class="badge bg-success-subtle text-success rounded-pill px-3 py-2 fw-semibold"
+                                        style="font-size: 0.75rem;">Đã xác minh</span>
+                                    {% else %}
+                                    <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2 fw-semibold"
+                                        style="font-size: 0.75rem;">PHÁT HIỆN LỖI</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted small">
+                                    {% if item.DiffMinutes is none or item.DiffMinutes >= 999 %}
                                     N/A
-                                {% elif item.DiffMinutes < 1 %} 
-                                    Vừa xong
-                                {% elif item.DiffMinutes < 60 %} 
-                                    {{ item.DiffMinutes }} phút trước
-                                {% else %} 
-                                    {{ (item.DiffMinutes // 60) }} giờ trước
-                                {% endif %}
-                            </td>
-                            <td class="text-center text-muted"><i class="fa-solid fa-ellipsis"></i></td>
-                        </tr>
-                        {% endfor %}
-                        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-                    </tbody>
-                </table>
-                <div class="text-center py-3 border-top">
-                    <button class="btn btn-link text-muted text-decoration-none small">Tải thêm hoạt động <i class="fa-solid fa-chevron-down ms-1"></i></button>
+                                    {% elif item.DiffMinutes < 1 %} Vừa xong {% elif item.DiffMinutes < 60 %} {{
+                                        item.DiffMinutes }} phút trước {% else %} {{ (item.DiffMinutes // 60) }} giờ
+                                        trước {% endif %} </td>
+                                <td class="text-center text-muted"><i class="fa-solid fa-ellipsis"></i></td>
+                            </tr>
+                            {% endfor %}
+                            <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+                        </tbody>
+                    </table>
+                    <div class="text-center py-3 border-top">
+                        <button class="btn btn-link text-muted text-decoration-none small">Tải thêm hoạt động <i
+                                class="fa-solid fa-chevron-down ms-1"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 </body>
+
 </html>

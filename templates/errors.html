@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,261 +8,292 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/errors.css') }}">
+
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
 </head>
+
 <body>
 
-<nav class="navbar navbar-expand-lg bg-white border-bottom py-3">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#">
-            <i class="fa-solid fa-square-n me-2 fs-3"></i> NuLabel <span class="fw-light ms-1 text-secondary">Viewer</span>
-        </a>
-        <div class="collapse navbar-collapse ms-5">
-            <nav class="d-flex gap-4 small fw-bold text-muted">
-                <a href="{{ url_for('dashboard') }}" class="text-decoration-none text-muted">Trang chủ</a>
-                <a href="{{ url_for('workspace') }}" class="text-decoration-none text-muted">Hàng chờ duyệt</a>
-                <a href="{{ url_for('all_scenes') }}" class="text-decoration-none text-muted">Tập dữ liệu</a>
-                <a href="{{ url_for('errors') }}" class="text-success text-decoration-none border-bottom border-success border-2 pb-1">Báo cáo</a>
-            </nav>
-        </div>
-    </div>
-</nav>
-
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="fw-bold">Quản lý lỗi</h3>
-            <p class="text-muted">Theo dõi và phản hồi các sự cố kỹ thuật trong thời gian thực.</p>
-        </div>
-    </div>
-
-    <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card stat-card p-3 shadow-sm" style="border-left-color: #2e7d32; border-left-width: 5px;">
-            <div class="d-flex justify-content-between mb-2">
-                <div class="icon-box bg-success-subtle text-success p-2 rounded"><i class="fa-solid fa-check-double"></i></div>
-                <span class="stat-badge bg-success-subtle text-success px-2 py-1 rounded small" style="font-size: 10px;">+12% vs LW</span>
+    <nav class="navbar navbar-expand-lg bg-white border-bottom py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="">
+                <img src="{{ url_for('static', filename='favicon/favicon.ico') }}" class="logo-a-inner"
+                    alt="NuLabel Logo">
+                <i class="fa-solid fa-square-n me-2 fs-3"></i> NuLabel <span
+                    class="fw-light ms-1 text-secondary">Viewer</span>
+            </a>
+            <div class="collapse navbar-collapse ms-5">
+                <nav class="d-flex gap-4 small fw-bold text-muted">
+                    <a href="{{ url_for('dashboard') }}" class="text-decoration-none text-muted">Trang chủ</a>
+                    <a href="{{ url_for('analytics') }}" class="text-decoration-none text-muted">Hàng chờ duyệt</a>
+                    <a href="{{ url_for('all_scenes') }}" class="text-decoration-none text-muted">Tập dữ liệu</a>
+                    <a href="{{ url_for('errors') }}"
+                        class="text-success text-decoration-none border-bottom border-success border-2 pb-1">Báo cáo</a>
+                </nav>
             </div>
-            <small class="text-muted d-block mb-1">Tổng số lỗi hệ thống đã được đội ngũ kỹ thuật xử lý thành công.</small>
-            <h2 class="fw-bold mb-0">{{ "{:,}".format(resolved_count) }}</h2>
         </div>
-    </div>
+    </nav>
 
-    <div class="col-md-3">
-        <div class="card stat-card p-3 shadow-sm" style="border-left-color: #d32f2f; border-left-width: 5px;">
-            <div class="d-flex justify-content-between mb-2">
-                <div class="icon-box bg-danger-subtle text-danger p-2 rounded"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <span class="stat-badge bg-danger-subtle text-danger px-2 py-1 rounded small" style="font-size: 10px;">-5% improved</span>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold">Quản lý lỗi</h3>
+                <p class="text-muted">Theo dõi và phản hồi các sự cố kỹ thuật trong thời gian thực.</p>
             </div>
-            <small class="text-muted d-block mb-1">Danh sách các sự cố dán nhãn đang chờ kiểm duyệt và khắc phục.</small>
-            <h2 class="fw-bold mb-0">{{ "{:,}".format(pending_count) }}</h2>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card stat-card p-3 shadow-sm" style="border-left-color: #1976d2; border-left-width: 5px;">
-            <div class="d-flex justify-content-between mb-2">
-                <div class="icon-box bg-primary-subtle text-primary p-2 rounded"><i class="fa-solid fa-bullseye"></i></div>
-                <span class="stat-badge bg-light border px-2 py-1 rounded small" style="font-size: 10px;">Mục tiêu ngày</span>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card p-3 shadow-sm" style="border-left-color: #2e7d32; border-left-width: 5px;">
+                    <div class="d-flex justify-content-between mb-2">
+                        <div class="icon-box bg-success-subtle text-success p-2 rounded"><i
+                                class="fa-solid fa-check-double"></i></div>
+                        <span class="stat-badge bg-success-subtle text-success px-2 py-1 rounded small"
+                            style="font-size: 10px;">+12% vs LW</span>
+                    </div>
+                    <small class="text-muted d-block mb-1">Tổng số lỗi hệ thống đã được đội ngũ kỹ thuật xử lý thành
+                        công.</small>
+                    <h2 class="fw-bold mb-0">{{ "{:,}".format(resolved_count) }}</h2>
+                </div>
             </div>
-            <small class="text-muted d-block mb-1">Chỉ tiêu số lượng lỗi cần giải quyết trong ca làm việc hiện tại.</small>
-            <h2 class="fw-bold mb-0">42</h2>
-        </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card stat-card p-3 shadow-sm" style="border-left-color: #fbc02d; border-left-width: 5px;">
-            <div class="d-flex justify-content-between mb-2">
-                <div class="icon-box bg-warning-subtle text-warning p-2 rounded"><i class="fa-regular fa-clock"></i></div>
-                <span class="stat-badge bg-success-subtle text-success px-2 py-1 rounded small" style="font-size: 10px;">8% faster</span>
+            <div class="col-md-3">
+                <div class="card stat-card p-3 shadow-sm" style="border-left-color: #d32f2f; border-left-width: 5px;">
+                    <div class="d-flex justify-content-between mb-2">
+                        <div class="icon-box bg-danger-subtle text-danger p-2 rounded"><i
+                                class="fa-solid fa-triangle-exclamation"></i></div>
+                        <span class="stat-badge bg-danger-subtle text-danger px-2 py-1 rounded small"
+                            style="font-size: 10px;">-5% improved</span>
+                    </div>
+                    <small class="text-muted d-block mb-1">Danh sách các sự cố dán nhãn đang chờ kiểm duyệt và khắc
+                        phục.</small>
+                    <h2 class="fw-bold mb-0">{{ "{:,}".format(pending_count) }}</h2>
+                </div>
             </div>
-            <small class="text-muted d-block mb-1">Tốc độ trung bình từ lúc phát hiện đến khi lỗi được xác nhận.</small>
-            <h2 class="fw-bold mb-0">{{ avg_speed }} hrs</h2>
+
+            <div class="col-md-3">
+                <div class="card stat-card p-3 shadow-sm" style="border-left-color: #1976d2; border-left-width: 5px;">
+                    <div class="d-flex justify-content-between mb-2">
+                        <div class="icon-box bg-primary-subtle text-primary p-2 rounded"><i
+                                class="fa-solid fa-bullseye"></i></div>
+                        <span class="stat-badge bg-light border px-2 py-1 rounded small" style="font-size: 10px;">Mục
+                            tiêu ngày</span>
+                    </div>
+                    <small class="text-muted d-block mb-1">Chỉ tiêu số lượng lỗi cần giải quyết trong ca làm việc hiện
+                        tại.</small>
+                    <h2 class="fw-bold mb-0">42</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card stat-card p-3 shadow-sm" style="border-left-color: #fbc02d; border-left-width: 5px;">
+                    <div class="d-flex justify-content-between mb-2">
+                        <div class="icon-box bg-warning-subtle text-warning p-2 rounded"><i
+                                class="fa-regular fa-clock"></i></div>
+                        <span class="stat-badge bg-success-subtle text-success px-2 py-1 rounded small"
+                            style="font-size: 10px;">8% faster</span>
+                    </div>
+                    <small class="text-muted d-block mb-1">Tốc độ trung bình từ lúc phát hiện đến khi lỗi được xác
+                        nhận.</small>
+                    <h2 class="fw-bold mb-0">{{ avg_speed }} hrs</h2>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-    <div class="filter-container shadow-sm border-0 mb-4">
-        <div class="filter-box">
-            <span class="filter-label">TRẠNG THÁI:</span>
-            <span class="filter-value">All Statuses</span>
-            <i class="fa-solid fa-chevron-down ms-3 text-muted" style="font-size: 10px;"></i>
+        <div class="filter-container shadow-sm border-0 mb-4">
+            <div class="filter-box">
+                <span class="filter-label">TRẠNG THÁI:</span>
+                <span class="filter-value">All Statuses</span>
+                <i class="fa-solid fa-chevron-down ms-3 text-muted" style="font-size: 10px;"></i>
+            </div>
+
+            <div class="filter-box">
+                <span class="filter-label">MỨC ĐỘ:</span>
+                <span class="filter-value">Any Severity</span>
+                <i class="fa-solid fa-chevron-down ms-3 text-muted" style="font-size: 10px;"></i>
+            </div>
+
+            <div class="filter-box">
+                <span class="filter-label">DANH MỤC:</span>
+                <span class="filter-value">All Categories</span>
+                <i class="fa-solid fa-chevron-down ms-3 text-muted" style="font-size: 10px;"></i>
+            </div>
+
+            <a href="#" class="btn-clear-filters">Xóa bộ lọc</a>
         </div>
 
-        <div class="filter-box">
-            <span class="filter-label">MỨC ĐỘ:</span>
-            <span class="filter-value">Any Severity</span>
-            <i class="fa-solid fa-chevron-down ms-3 text-muted" style="font-size: 10px;"></i>
-        </div>
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Mã lỗi</th>
+                                <th>Loại ngoại lệ</th>
+                                <th>Mức độ</th>
+                                <th>Lần cuối</th>
+                                <th>Trạng thái</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in error_list %}
+                            <tr>
+                                <td class="ps-4 text-muted small">#ERR-{{ item[0][:4].upper() }}</td>
+                                <td>
+                                    <strong>Label_Mismatch_Error</strong><br>
+                                    <small class="text-muted">{{ item[1] }}</small>
+                                </td>
+                                <td>
+                                    {% if loop.index % 3 == 0 %}
+                                    <span class="lvl-badge lvl-critical">NGHIÊM TRỌNG</span>
+                                    {% elif loop.index % 2 == 0 %}
+                                    <span class="lvl-badge lvl-high">LỚN</span>
+                                    {% else %}
+                                    <span class="lvl-badge lvl-low">NHỎ</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small">{{ item[2].strftime('%H:%M') if item[2] else 'N/A' }}</td>
+                                <td>
+                                    <span class="status-dot" style="background: #ff4d4f;"></span>
+                                    <span class="small">Chưa xử lý</span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('analytics', current_token=item[0]) }}"
+                                        class="btn btn-light btn-sm border fw-bold px-3">
+                                        Xem chi tiết
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
 
-        <div class="filter-box">
-            <span class="filter-label">DANH MỤC:</span>
-            <span class="filter-value">All Categories</span>
-            <i class="fa-solid fa-chevron-down ms-3 text-muted" style="font-size: 10px;"></i>
-        </div>
-
-        <a href="#" class="btn-clear-filters">Xóa bộ lọc</a>
-    </div>
-
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="ps-4">Mã lỗi</th>
-                        <th>Loại ngoại lệ</th>
-                        <th>Mức độ</th>
-                        <th>Lần cuối</th>
-                        <th>Trạng thái</th>
-                        <th class="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in error_list %}
-                    <tr>
-                        <td class="ps-4 text-muted small">#ERR-{{ item[0][:4].upper() }}</td>
-                        <td>
-                            <strong>Label_Mismatch_Error</strong><br>
-                            <small class="text-muted">{{ item[1] }}</small> </td>
-                        <td>
-                            {% if loop.index % 3 == 0 %}
-                                <span class="lvl-badge lvl-critical">NGHIÊM TRỌNG</span>
-                            {% elif loop.index % 2 == 0 %}
-                                <span class="lvl-badge lvl-high">LỚN</span>
-                            {% else %}
-                                <span class="lvl-badge lvl-low">NHỎ</span>
+                            {% if not error_list %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="fa-solid fa-circle-check fs-2 d-block mb-2"></i>
+                                    Tuyệt vời! Không có lỗi nào cần xử lý.
+                                </td>
+                            </tr>
                             {% endif %}
-                        </td>
-                        <td class="small">{{ item[2].strftime('%H:%M') if item[2] else 'N/A' }}</td>
-                        <td>
-                            <span class="status-dot" style="background: #ff4d4f;"></span> 
-                            <span class="small">Chưa xử lý</span>
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ url_for('analytics', current_token=item[0]) }}" 
-                               class="btn btn-light btn-sm border fw-bold px-3">
-                                Xem chi tiết
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer border-top">
+                    <div class="pagination-text small text-muted">
+                        Đang hiển thị {{ start_idx }}-{{ end_idx }} trong tổng số {{ pending_count }} lỗi
+                    </div>
+                    <div class="d-flex gap-2">
+                        {% if page > 1 %}
+                        <a href="{{ url_for('errors', page=page-1) }}" class="btn-pagination text-decoration-none">
+                            <i class="fa-solid fa-chevron-left small"></i>
+                        </a>
+                        {% else %}
+                        <button class="btn-pagination opacity-50" disabled><i
+                                class="fa-solid fa-chevron-left small"></i></button>
+                        {% endif %}
+
+                        {% if page < total_pages %} <a href="{{ url_for('errors', page=page+1) }}"
+                            class="btn-pagination text-decoration-none text-dark">
+                            <i class="fa-solid fa-chevron-right small"></i>
                             </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-
-                    {% if not error_list %}
-                    <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">
-                            <i class="fa-solid fa-circle-check fs-2 d-block mb-2"></i>
-                            Tuyệt vời! Không có lỗi nào cần xử lý.
-                        </td>
-                    </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="table-footer border-top">
-    <div class="pagination-text small text-muted">
-        Đang hiển thị {{ start_idx }}-{{ end_idx }} trong tổng số {{ pending_count }} lỗi
-    </div>
-    <div class="d-flex gap-2">
-        {% if page > 1 %}
-        <a href="{{ url_for('errors', page=page-1) }}" class="btn-pagination text-decoration-none">
-            <i class="fa-solid fa-chevron-left small"></i>
-        </a>
-        {% else %}
-        <button class="btn-pagination opacity-50" disabled><i class="fa-solid fa-chevron-left small"></i></button>
-        {% endif %}
-
-        {% if page < total_pages %}
-        <a href="{{ url_for('errors', page=page+1) }}" class="btn-pagination text-decoration-none text-dark">
-            <i class="fa-solid fa-chevron-right small"></i>
-        </a>
-        {% else %}
-        <button class="btn-pagination opacity-50" disabled><i class="fa-solid fa-chevron-right small"></i></button>
-        {% endif %}
-    </div>
-</div>
-    </div>
-</div>
-
-    <div class="row g-4">
-        <div class="col-md-8">
-            <div class="card chart-card p-4 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-bold mb-0">Phân bổ lỗi (7 ngày)</h5>
-                    <div class="d-flex gap-3 small">
-                        <span><span class="legend-dot" style="background: var(--primary-green);"></span> Đã xử lý</span>
-                        <span><span class="legend-dot" style="background: var(--light-green);"></span> Hiện tại</span>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between align-items-end px-2" style="height: 180px;">
-                    <div class="text-center">
-                        <div class="bar-stack" style="height: 150px;">
-                            <div class="bar-handled" style="height: 60%;"></div>
-                            <div class="bar-current" style="height: 40%;"></div>
-                        </div>
-                        <small class="text-muted d-block mt-2">MON</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="bar-stack" style="height: 120px;">
-                            <div class="bar-handled" style="height: 50%;"></div>
-                            <div class="bar-current" style="height: 30%;"></div>
-                        </div>
-                        <small class="text-muted d-block mt-2">TUE</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="bar-stack" style="height: 160px;">
-                            <div class="bar-handled" style="height: 70%;"></div>
-                            <div class="bar-current" style="height: 30%;"></div>
-                        </div>
-                        <small class="text-muted d-block mt-2">WED</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="bar-stack" style="height: 140px;">
-                            <div class="bar-handled" style="height: 55%;"></div>
-                            <div class="bar-current" style="height: 45%;"></div>
-                        </div>
-                        <small class="text-muted d-block mt-2">THU</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="bar-stack" style="height: 150px;">
-                            <div class="bar-handled" style="height: 65%;"></div>
-                            <div class="bar-current" style="height: 35%;"></div>
-                        </div>
-                        <small class="text-muted d-block mt-2">FRI</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="bar-stack" style="height: 50px;">
-                            <div class="bar-handled" style="height: 40%;"></div>
-                            <div class="bar-current" style="height: 60%;"></div>
-                        </div>
-                        <small class="text-muted d-block mt-2">SAT</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="bar-stack" style="height: 70px;">
-                            <div class="bar-handled" style="height: 50%;"></div>
-                            <div class="bar-current" style="height: 50%;"></div>
-                        </div>
-                        <small class="text-muted d-block mt-2">SUN</small>
+                            {% else %}
+                            <button class="btn-pagination opacity-50" disabled><i
+                                    class="fa-solid fa-chevron-right small"></i></button>
+                            {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-4">
-    <div class="card chart-card health-score-card p-4 d-flex flex-column align-items-center justify-content-center shadow">
-        <h5 class="fw-bold mb-2">Chỉ số sức khỏe</h5>
-        <p class="small opacity-75 text-center mb-4">Dựa trên nhật ký hệ thống mới nhất.</p>
-        
-        <div class="gauge-circle">
-            <div class="gauge-inner">
-                <h2 class="fw-bold mb-0">{{ health_score }}%</h2>
-                <small class="fw-bold text-uppercase">{{ health_status }}</small>
+
+        <div class="row g-4">
+            <div class="col-md-8">
+                <div class="card chart-card p-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Phân bổ lỗi (7 ngày)</h5>
+                        <div class="d-flex gap-3 small">
+                            <span><span class="legend-dot" style="background: var(--primary-green);"></span> Đã xử
+                                lý</span>
+                            <span><span class="legend-dot" style="background: var(--light-green);"></span> Hiện
+                                tại</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-end px-2" style="height: 180px;">
+                        <div class="text-center">
+                            <div class="bar-stack" style="height: 150px;">
+                                <div class="bar-handled" style="height: 60%;"></div>
+                                <div class="bar-current" style="height: 40%;"></div>
+                            </div>
+                            <small class="text-muted d-block mt-2">MON</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="bar-stack" style="height: 120px;">
+                                <div class="bar-handled" style="height: 50%;"></div>
+                                <div class="bar-current" style="height: 30%;"></div>
+                            </div>
+                            <small class="text-muted d-block mt-2">TUE</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="bar-stack" style="height: 160px;">
+                                <div class="bar-handled" style="height: 70%;"></div>
+                                <div class="bar-current" style="height: 30%;"></div>
+                            </div>
+                            <small class="text-muted d-block mt-2">WED</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="bar-stack" style="height: 140px;">
+                                <div class="bar-handled" style="height: 55%;"></div>
+                                <div class="bar-current" style="height: 45%;"></div>
+                            </div>
+                            <small class="text-muted d-block mt-2">THU</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="bar-stack" style="height: 150px;">
+                                <div class="bar-handled" style="height: 65%;"></div>
+                                <div class="bar-current" style="height: 35%;"></div>
+                            </div>
+                            <small class="text-muted d-block mt-2">FRI</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="bar-stack" style="height: 50px;">
+                                <div class="bar-handled" style="height: 40%;"></div>
+                                <div class="bar-current" style="height: 60%;"></div>
+                            </div>
+                            <small class="text-muted d-block mt-2">SAT</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="bar-stack" style="height: 70px;">
+                                <div class="bar-handled" style="height: 50%;"></div>
+                                <div class="bar-current" style="height: 50%;"></div>
+                            </div>
+                            <small class="text-muted d-block mt-2">SUN</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div
+                    class="card chart-card health-score-card p-4 d-flex flex-column align-items-center justify-content-center shadow">
+                    <h5 class="fw-bold mb-2">Chỉ số sức khỏe</h5>
+                    <p class="small opacity-75 text-center mb-4">Dựa trên nhật ký hệ thống mới nhất.</p>
+
+                    <div class="gauge-circle">
+                        <div class="gauge-inner">
+                            <h2 class="fw-bold mb-0">{{ health_score }}%</h2>
+                            <small class="fw-bold text-uppercase">{{ health_status }}</small>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-    </div>
-</div>
 
 </body>
 
