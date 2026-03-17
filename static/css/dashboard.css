@@ -1,4 +1,4 @@
-body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+ body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .sidebar { width: 260px; height: 100vh; background: white; border-right: 1px solid #eee; position: fixed; display: flex; flex-direction: column; }
         .main-content { margin-left: 260px; padding: 30px; width: calc(100% - 260px); }
         .nav-link { color: #666; font-weight: 500; padding: 12px 20px; border-radius: 8px; margin: 4px 15px; }
@@ -10,3 +10,16 @@ body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verda
         .tag-down { background: #ffebee; color: #c62828; }
         .btn-primary-custom { background-color: #2e7d32; border: none; padding: 10px 20px; border-radius: 10px; }
         .search-bar { background: #f1f3f4; border: none; border-radius: 10px; padding-left: 40px; }
+
+.logout-btn {
+    font-size: 1.1rem;
+    color: #adb5bd; /* Màu xám nhạt */
+    transition: all 0.2s ease;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.logout-btn:hover {
+    color: #dc3545 !important; /* Đổi sang màu đỏ khi hover */
+    background-color: #fff1f0; /* Nền đỏ nhạt */
+}

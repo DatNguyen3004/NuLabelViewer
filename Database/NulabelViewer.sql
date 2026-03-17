@@ -31,6 +31,13 @@ CREATE TABLE ObjectLabels (
     CONSTRAINT FK_Object_Scene FOREIGN KEY (SampleToken) REFERENCES Scenes(SampleToken)
 );
 
+-- Thêm các cột metadata vào bảng Scenes hiện có
+ALTER TABLE Scenes 
+ADD SceneName NVARCHAR(100),   -- Mã định danh dễ đọc
+    CaptureTime DATETIME,      -- Thời gian ghi hình
+    Weather NVARCHAR(200),     -- Thời tiết (Rainy, Sunny,...)
+    Speed FLOAT;               -- Tốc độ xe
+
 drop table Scenes
 drop table Annotations
 

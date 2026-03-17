@@ -1,11 +1,33 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database import get_db_connection
 
-app = Flask(__name__) # 2. KHỞI TẠO BIẾN APP (Dòng này phải nằm trên các dòng @app.route)
+app = Flask(__name__)
+app.secret_key = 'nulabel_secret_key' # Cần thiết để dùng Session
+
+# DANH SÁCH 3 TÀI KHOẢN MẶC ĐỊNH
+USERS = {
+    "admin": {
+        "password": "admin123", 
+        "full_name": "Admin Manager", 
+        "role": "Quản trị viên"
+    },
+    "labeler_1": {
+        "password": "work123", 
+        "full_name": "Nguyễn Văn Label", 
+        "role": "Người gán nhãn"
+    },
+    "reviewer_1": {
+        "password": "check123", 
+        "full_name": "Trần Thị Kiểm Định", 
+        "role": "Người kiểm duyệt"
+    }
+}
 
 @app.route('/workspace')
 @app.route('/workspace/<current_token>') # QUAN TRỌNG: Thêm dòng này để nhận token từ nút bấm
 def workspace(current_token=None):
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     conn = get_db_connection()
     if not conn:
         return "Lỗi kết nối Database!"
@@ -154,14 +176,37 @@ def verify():
         # Nếu đã làm sạch sành sanh 404 bộ, báo hoàn thành hoặc về bộ cuối cùng
         return redirect(url_for('analytics', current_token=token))
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Flask sẽ tự tìm file login.html trong thư mục templates
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # Logic kiểm tra
+        user = USERS.get(username)
+        if user and user['password'] == password:
+            session['logged_in'] = True
+            session['username'] = username
+            return redirect(url_for('dashboard'))
+        else:
+            # Gửi thông báo lỗi về trang Login
+            flash("Tài khoản không tồn tại hoặc mật khẩu chưa đúng!", "danger")
+            
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 @app.route('/')
 @app.route('/dashboard') # Cả 2 đường dẫn đều chạy chung 1 hàm bên dưới
 def dashboard():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    # Lấy thông tin đầy đủ của user đang đăng nhập
+    user_info = USERS.get(session.get('username'))
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -229,14 +274,20 @@ def dashboard():
     conn.close()
     
     # QUAN TRỌNG: Truyền đúng tên biến 'stats' vào HTML
-    return render_template('dashboard.html', 
-                           stats=stats,
-                           history=history, 
-                           queue=queue_count)
+    return render_template('dashboard.html',
+                            user_info=user_info,
+                            stats=stats,
+                            history=history, 
+                            queue=queue_count)
 
 @app.route('/analytics')
 @app.route('/analytics/<current_token>')
 def analytics(current_token=None):
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    # Lấy thông tin đầy đủ của user đang đăng nhập
+    user_info = USERS.get(session.get('username'))
     conn = get_db_connection()
     if not conn: return "Lỗi kết nối Database!"
     cursor = conn.cursor()
@@ -322,6 +373,7 @@ def analytics(current_token=None):
     conn.close()
 
     return render_template('analytics.html',
+        user_info=user_info,
         progress=progress,
         status_stats=status_stats,
         object_summary=object_summary,
@@ -365,6 +417,8 @@ def search():
 
 @app.route('/errors')
 def errors():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     # 1. Khởi tạo thông số phân trang
     page = request.args.get('page', 1, type=int)
     per_page = 5
@@ -434,6 +488,8 @@ def errors():
 
 @app.route('/all-scenes')
 def all_scenes():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     conn = get_db_connection()
     cursor = conn.cursor()
     # Lấy danh sách tất cả các bộ ảnh

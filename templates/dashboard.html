@@ -26,12 +26,18 @@
         </nav>
 
         <div class="mt-auto px-4 py-3 border-top d-flex align-items-center">
-            <img src="https://ui-avatars.com/api/?name=Alex+Rivera&background=random" class="rounded-circle me-3" width="40">
-            <div>
-                <p class="mb-0 fw-bold small">Alex Rivera</p>
-                <small class="text-muted" style="font-size: 0.7rem;">Admin Account</small>
-            </div>
-        </div>
+    <img src="https://ui-avatars.com/api/?name={{ user_info.full_name | replace(' ', '+') }}&background=random&color=fff" 
+         class="rounded-circle me-3" width="40" alt="User Avatar">
+    
+    <div class="user-info">
+        <p class="mb-0 fw-bold small text-dark">{{ user_info.full_name }}</p>
+        <small class="text-muted" style="font-size: 0.7rem;">{{ user_info.role }}</small>
+    </div>
+
+    <a href="{{ url_for('logout') }}" class="ms-auto logout-btn d-flex align-items-center justify-content-center" title="Đăng xuất">
+        <i class="fa-solid fa-right-from-bracket"></i>
+    </a>
+</div>
     </div>
 
     <div class="main-content">

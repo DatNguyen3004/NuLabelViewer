@@ -68,18 +68,27 @@ body {
             font-size: 0.9rem;
         }
         .leaf-btn{
-        width:80px;
-        height:80px;
-        background:#d3eadc;
-        border-radius:50%;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        margin:0 auto 20px;
+            width:80px;
+            height:80px;
+            background:#d3eadc;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            margin:0 auto 20px;
         }
         
         .leaf-btn i{
             font-size:38px;
             color:#2e7d32;
             transform: translateX(-2px);
+        }
+
+        .logo-a-inner {
+            /* Chỉnh từ 50px xuống 40px hoặc 35px tùy theo ý bro */
+            width: 100px;
+            height: 100px;
+            
+            object-fit: contain; /* Giữ nguyên tỷ lệ, không bị méo ảnh */
+            transition: all 0.3s ease; /* Thêm hiệu ứng mượt mà khi load */
         }
