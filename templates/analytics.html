@@ -6,32 +6,7 @@
     <title>NuLabel Workspace - Final Layout</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --sidebar-bg: #ffffff; --main-bg: #f8f9fa; --primary-green: #1a7344; }
-        body, html { height: 100%; overflow: hidden; background-color: var(--main-bg); font-family: 'Segoe UI', sans-serif; }
-        .app-container { height: 100vh; display: flex; flex-direction: column; }
-        .main-layout { display: flex; flex: 1; overflow: hidden; }
-
-        /* Sidebar chung */
-        .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid #dee2e6; display: flex; flex-direction: column; flex-shrink: 0; }
-        .sidebar-right { width: 320px; border-right: none; border-left: 1px solid #dee2e6; padding: 20px; }
-
-        /* Khu vực giữa cuộn được */
-        .scrollable-content { flex: 1; overflow-y: auto; padding: 25px; background: #eaedef; }
-
-        /* Camera Card */
-        .camera-card { position: relative; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 16/10; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-        .camera-img { width: 100%; height: 100%; object-fit: cover; }
-        .cam-tag { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.6); color: white; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-
-        /* UI Elements */
-        .layer-btn { border: 1px solid transparent; transition: 0.2s; cursor: pointer; border-radius: 8px; margin-bottom: 5px; padding: 10px; font-size: 0.9rem; }
-        .layer-btn.active { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
-        .object-item { border: 1px solid #eee; border-radius: 10px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .btn-green { background-color: var(--primary-green); color: white; border: none; font-weight: 600; padding: 12px; border-radius: 10px; }
-        .btn-green:hover { background-color: #145a35; color: white; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analytics.css') }}">
 </head>
 <body>
 
@@ -40,9 +15,10 @@
         <div class="d-flex align-items-center">
             <b class="fs-5 me-4">NuLabel <span class="fw-light text-dark">Viewer</span></b>
             <nav class="d-flex gap-4 small fw-bold text-muted">
-                <a href="#" class="text-success text-decoration-none border-bottom border-success border-2 pb-1">Không gian làm việc</a>
-                <a href="#" class="text-decoration-none text-muted">Tập dữ liệu</a>
-                <a href="#" class="text-decoration-none text-muted">Phân tích</a>
+                <a href="{{ url_for('dashboard') }}" class="text-decoration-none text-muted">Trang chủ</a>
+                <a class="text-success text-decoration-none border-bottom border-success border-2 pb-1">Hàng chờ duyệt</a>
+                <a href="{{ url_for('all_scenes') }}" class="text-decoration-none text-muted">Tập dữ liệu</a>
+                <a href="{{ url_for('errors') }}" class="text-decoration-none text-muted">Báo cáo</a>
             </nav>
         </div>
         <div class="d-flex gap-3 align-items-center">
@@ -54,94 +30,120 @@
     <div class="main-layout">
         <aside class="sidebar p-3">
             <div class="mb-4">
-                <small class="text-muted d-block">Mã định danh</small>
-                <strong class="text-dark">99283-AX-402</strong>
-            </div>
-            <div class="mb-4">
-                <small class="text-muted d-block">Thời gian</small>
-                <strong class="text-dark">2023-11-24 14:02:11</strong>
-            </div>
-            <div class="row g-2 mb-4">
-                <div class="col-6 text-center bg-light p-2 rounded-3">
-                    <small class="text-muted d-block">Thời tiết</small><b class="small">Trời mưa</b>
-                </div>
-                <div class="col-6 text-center bg-light p-2 rounded-3">
-                    <small class="text-muted d-block">Tốc độ</small><b class="small">35.8 MPH</b>
-                </div>
-            </div>
+        <small class="text-muted d-block">Mã định danh</small>
+        <strong class="text-dark">{{ scene_info.name if scene_info else 'N/A' }}</strong>
+    </div>
+    <div class="mb-4">
+        <small class="text-muted d-block">Thời gian</small>
+        <strong class="text-dark">{{ scene_info.time if scene_info else 'N/A' }}</strong>
+    </div>
+    <div class="row g-2 mb-4">
+        <div class="col-6 text-center bg-light p-2 rounded-3">
+            <small class="text-muted d-block">Thời tiết</small>
+            <b class="small">{{ scene_info.weather if scene_info else 'N/A' }}</b>
+        </div>
+        <div class="col-6 text-center bg-light p-2 rounded-3">
+            <small class="text-muted d-block">Tốc độ</small>
+            <b class="small">{{ scene_info.speed if scene_info else '0' }} KM/H</b>
+        </div>
+    </div>
             
             <p class="small fw-bold text-muted mb-2">LỚP CHÚ THÍCH</p>
-            <div class="layer-btn active d-flex justify-content-between align-items-center">
-                <span><i class="fa-solid fa-cube me-2"></i> BBox 3D</span>
-                <i class="fa-solid fa-eye"></i>
+<div class="layer-btn d-flex justify-content-between align-items-center text-muted">
+    <span><i class="fa-solid fa-mask me-2"></i> BBox 3D</span>
+    <i class="fa-solid fa-eye-slash"></i>
+</div>
+<div class="layer-btn d-flex justify-content-between align-items-center text-muted"> 
+    <span><i class="fa-solid fa-mask me-2"></i> Semantic Mask</span> 
+    <i class="fa-solid fa-eye-slash"></i> </div> 
+    <div class="layer-btn d-flex justify-content-between align-items-center text-muted"> 
+        <span><i class="fa-solid fa-braille me-2"></i> Lidar Points</span> 
+        <i class="fa-solid fa-eye-slash"></i> </div>
+
+<div class="mt-4 pt-3 border-top">
+    <p class="small fw-bold text-muted mb-2">ĐIỀU HƯỚNG DỮ LIỆU</p>
+    <div class="bg-white border rounded-3 p-3 shadow-sm">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <a href="{{ url_for('analytics', current_token=prev_token) }}" 
+               class="btn btn-outline-dark border-2 py-2 px-3 shadow-sm nav-btn-big">
+                <i class="fa-solid fa-backward-step fs-5"></i>
+            </a>
+
+            <div class="text-center">
+                <span class="d-block fs-4 fw-bold text-success" style="line-height: 1;">{{ curr_num }}
+                <small class="text-muted fw-bold" style="font-size: 15px;">/ {{ total_count }}</small></span>
             </div>
-            <div class="layer-btn d-flex justify-content-between align-items-center text-muted">
-                <span><i class="fa-solid fa-mask me-2"></i> Semantic Mask</span>
-                <i class="fa-solid fa-eye-slash"></i>
-            </div>
-            <div class="layer-btn d-flex justify-content-between align-items-center text-muted">
-                <span><i class="fa-solid fa-braille me-2"></i> Lidar Points</span>
-                <i class="fa-solid fa-eye-slash"></i>
-            </div>
-            
-            <button class="btn btn-success w-100 mt-auto py-2 mb-2"><i class="fa-solid fa-file-export me-2"></i>Xuất báo cáo</button>
+
+            <a href="{{ url_for('analytics', current_token=next_token) }}" 
+               class="btn btn-outline-dark border-2 py-2 px-3 shadow-sm nav-btn-big">
+                <i class="fa-solid fa-forward-step fs-5"></i>
+            </a>
+        </div>
+        
+        <div class="progress mt-3" style="height: 6px; background-color: #e9ecef;">
+            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                 role="progressbar" 
+                 style="width: {{ progress.pct }}%"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style bổ sung cho nút tua */
+    .nav-btn-big { transition: all 0.2s ease; border-radius: 10px !important; }
+    .nav-btn-big:hover { background-color: #343a40 !important; color: #fff !important; transform: translateY(-2px); }
+    .nav-btn-big:active { transform: translateY(0); }
+</style>
         </aside>
 
         <main class="scrollable-content">
             <div class="row row-cols-1 row-cols-lg-2 g-4">
-                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 01: TRƯỚC</span><img src="https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=600" class="camera-img"></div></div>
-                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 02: TRƯỚC TRÁI</span><img src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?w=600" class="camera-img"></div></div>
-                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 03: TRƯỚC PHẢI</span><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600" class="camera-img"></div></div>
-                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 04: SAU</span><img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=600" class="camera-img"></div></div>
-                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 05: SAU TRÁI</span><img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600" class="camera-img"></div></div>
-                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 06: SAU PHẢI</span><img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600" class="camera-img"></div></div>
+                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 01: TRƯỚC</span><img src="{{ url_for('static', filename=cams.front) }}" class="camera-img"></div></div>
+                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 02: TRƯỚC TRÁI</span><img src="{{ url_for('static', filename=cams.front_left) }}" class="camera-img"></div></div>
+                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 03: TRƯỚC PHẢI</span><img src="{{ url_for('static', filename=cams.front_right) }}" class="camera-img"></div></div>
+                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 04: SAU</span><img src="{{ url_for('static', filename=cams.back) }}" class="camera-img"></div></div>
+                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 05: SAU TRÁI</span><img src="{{ url_for('static', filename=cams.back_left) }}" class="camera-img"></div></div>
+                <div class="col"><div class="camera-card"><span class="cam-tag">CAM 06: SAU PHẢI</span><img src="{{ url_for('static', filename=cams.back_right) }}" class="camera-img"></div></div>
             </div>
         </main>
 
         <aside class="sidebar sidebar-right d-flex flex-column">
             <div class="flex-shrink-0 mb-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold m-0">VẬT THỂ TRONG CẢNH</h6>
-                    <span class="badge bg-light text-dark border">14</span>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold m-0 text-secondary">VẬT THỂ TRONG CẢNH</h6>
+        <span class="badge bg-light text-dark border">{{ "{:,}".format(total_all_objects) }} Tổng cộng</span>
+    </div>
+
+    <div style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+        {% for item in object_summary %}
+        <div class="card mb-2 border-0 shadow-sm rounded-3">
+            <div class="card-body p-2 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-circle text-success me-2" style="font-size: 8px;"></i>
+                    <span class="small fw-bold text-dark">{{ item.name }}</span>
                 </div>
-                <div class="object-item shadow-sm border-success">
-                    <span class="small fw-bold"><i class="fa-solid fa-circle text-success me-2" style="font-size: 8px;"></i> VEHICLE_01</span>
-                    <span class="badge bg-success-subtle text-success">98.4%</span>
-                </div>
-                <div class="object-item opacity-50">
-                    <span class="small"><i class="fa-solid fa-circle text-primary me-2" style="font-size: 8px;"></i> PEDESTRIAN_04</span>
-                    <span class="badge bg-light text-muted border">82.1%</span>
-                </div>
+                <span class="badge bg-light text-dark border">
+                    {{ "{:,}".format(item.count) }} </span>
             </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
             <div class="mt-auto border-top pt-4">
                 <label class="small fw-bold text-muted mb-2">GHI CHÚ KIỂM ĐỊNH</label>
                 <textarea class="form-control bg-light border-0 mb-3" rows="4" placeholder="Nhập ghi chú..."></textarea>
                 
-                <div class="d-flex gap-2">
-                    <button class="btn btn-light border flex-grow-1">Bỏ qua</button>
-                    <button class="btn btn-green flex-grow-1">Gửi & Tiếp theo</button>
-                </div>
+                <form action="{{ url_for('verify') }}" method="POST">
+                    <input type="hidden" name="sample_token" value="{{ token }}">
+                    <div class="d-flex gap-2">
+                        <button type="submit" name="status" value="2" class="btn btn-danger fw-bold flex-grow-1"> Sai</button>
+                        <button type="submit" name="status" value="1" class="btn btn-success flex-grow-1 fw-bold" style="background-color: #198754; border: none;">Đúng</button>
+                    </div>
+                </form>
             </div>
         </aside>
     </div>
-
-    <footer class="p-2 bg-white border-top d-flex align-items-center px-4">
-        <button class="btn btn-sm btn-outline-secondary me-3"><i class="fa-solid fa-chevron-left"></i> Mẫu trước</button>
-        <div class="d-flex gap-3 text-muted">
-            <i class="fa-solid fa-step-backward"></i>
-            <i class="fa-solid fa-step-forward"></i>
-        </div>
-        <div class="flex-grow-1 mx-4 my-2">
-            <div class="d-flex justify-content-between x-small text-muted mb-1" style="font-size: 11px;">
-                <span>FRAME 0182 / 0500</span>
-                <span>35.4% HOÀN THÀNH</span>
-            </div>
-            <div class="progress" style="height: 5px;">
-                <div class="progress-bar bg-success" style="width: 35.4%"></div>
-            </div>
-        </div>
-    </footer>
 </div>
 
 </body>

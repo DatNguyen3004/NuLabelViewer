@@ -1,0 +1,11 @@
+body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .camera-box { background: #000; border: 2px solid #343a40; transition: transform 0.2s; }
+        .camera-box:hover { transform: scale(1.02); z-index: 10; border-color: #198754; }
+        .camera-label { background: rgba(0,0,0,0.7); font-size: 0.7rem; padding: 2px 8px; }
+        .sidebar-card { height: calc(100vh - 40px); sticky-top: 20px; }
+        .object-item { border-left: 4px solid #198754; transition: 0.2s; }
+        .object-item:hover { background-color: #e9ecef !important; }
+        .btn-approve { background-color: #198754; color: white; border: none; }
+        .btn-approve:hover { background-color: #146c43; color: white; }
+        .btn-reject { background-color: #dc3545; color: white; border: none; }
+        .btn-reject:hover { background-color: #bb2d3b; color: white; }

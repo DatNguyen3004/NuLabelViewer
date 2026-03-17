@@ -1,27 +1,57 @@
-<h2>Danh sách 412 bộ dữ liệu</h2>
-<table border="1">
-    <thead>
-        <tr>
-            <th>STT</th>
-            <th>Sample Token</th>
-            <th>Ảnh minh họa (Front)</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuLabel - Dataset Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all_scenes.css') }}">
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold mb-1">Tập dữ liệu <span class="text-success">nuScenes</span></h2>
+            <p class="text-muted small">Tổng cộng 404 bộ dữ liệu được trích xuất từ v1.0-mini</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4 small">
+                <i class="fa-solid fa-arrow-left me-2"></i>Trang chủ
+            </a>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         {% for scene in scenes %}
-        <tr>
-            <td>{{ loop.index }}</td>
-            <td><code>{{ scene[0] }}</code></td>
-            <td>
-                <img src="{{ url_for('static', filename='Dataset/v1.0-mini/v1.0-mini/' + scene[1]) }}" width="100">
-            </td>
-            <td>
-                <a href="/workspace?token={{ scene[0] }}">
-                    <button>Vào Workspace</button>
-                </a>
-            </td>
-        </tr>
+        <div class="col">
+            <div class="card h-100 scene-card shadow-sm">
+                <div class="img-container">
+                    <img src="{{ url_for('static', filename='Dataset/v1.0-mini/' + scene[1].replace('\\', '/')) }}" 
+                         class="scene-img" alt="Front View">
+                    <span class="position-absolute top-0 start-0 m-2 badge bg-dark opacity-75">
+                        #{{ loop.index }}
+                    </span>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <small class="text-muted d-block mb-1">Sample Token:</small>
+                    <div class="token-badge text-truncate mb-3" title="{{ scene[0] }}">
+                        {{ scene[0] }}
+                    </div>
+                    
+                    <div class="mt-auto">
+                        <a href="{{ url_for('analytics', current_token=scene[0]) }}" class="btn btn-inspect w-100 text-decoration-none d-block text-center">
+                            <i class="fa-solid fa-magnifying-glass-chart me-2"></i>Kiểm định
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endfor %}
-    </tbody>
-</table>
+    </div>
+</div>
+
+</body>
+</html>

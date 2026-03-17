@@ -1,0 +1,133 @@
+:root { 
+            --primary-green: #1a7344; 
+            --light-green: #dcedc8;
+            --bg-light: #f8f9fa; 
+        }
+        body { background-color: var(--bg-light); font-family: 'Inter', sans-serif; font-size: 0.9rem; }
+        
+        /* Navbar & Input*/
+        .navbar-brand { font-weight: 800;}
+        .nav-link.active { color: var(--primary-green) !important; border-bottom: 2px solid var(--primary-green); }
+        .search-container { position: relative; width: 280px; }
+        .search-input { background: #f4f4f4; border: none; border-radius: 10px; padding: 8px 15px 8px 40px; font-size: 13px; width: 100%; }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #9a9ea5; }
+
+        /* Stats Cards */
+        .stat-card { border: none; border-radius: 12px; transition: 0.3s; border-left: 4px solid #ddd; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
+        .stat-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+        .icon-box { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+
+        /* Table Badges */
+        .lvl-badge { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+        .lvl-critical { background: #fff1f0; color: #cf1322; }
+        .lvl-high { background: #fffbe6; color: #d48806; }
+        .lvl-low { background: #e6f7ff; color: #096dd9; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+        /* Charts Section */
+        .chart-card { border: none; border-radius: 16px; background: white; }
+        .bar-stack { width: 30px; display: flex; flex-direction: column-reverse; gap: 2px; }
+        .bar-handled { background: var(--primary-green); border-radius: 2px; }
+        .bar-current { background: var(--light-green); border-radius: 2px; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+        .health-score-card { background: var(--primary-green); color: white; }
+        .gauge-circle { width: 140px; height: 140px; border-radius: 50%; border: 12px solid rgba(255,255,255,0.2); border-top-color: white; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; }
+        .gauge-inner { transform: rotate(-45deg); text-align: center; }
+    
+        /* Chân bảng điều hướng */
+        .table-footer {
+            padding: 16px 24px;
+            background-color: #ffffff;
+            border-top: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pagination-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .btn-pagination {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e0e0e0;
+            background: #fff;
+            border-radius: 8px;
+            color: #444;
+            transition: all 0.2s;
+        }
+
+        .btn-pagination:hover {
+            background: #f8f9fa;
+            border-color: #ccc;
+        }
+
+        .table thead th {
+            color: #9A9EA5 !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            background-color: #fcfdfe;
+            border-bottom: 1px solid #f1f1f1;
+            padding: 15px 20px !important;
+        }
+        
+        /* Tùy chỉnh thanh bộ lọc */
+        .filter-container {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-box {
+            background-color: #f1f4f9;
+            border-radius: 10px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .filter-box:hover {
+            background-color: #e8ecf3;
+        }
+
+        .filter-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #8a92a6;
+            margin-right: 5px;
+            text-transform: uppercase;
+        }
+
+        .filter-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1d1f;
+        }
+
+        .btn-clear-filters {
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+            margin-left: auto; /* Đẩy sang phải */
+        }
+
+        .btn-clear-filters:hover {
+            color: #1a5a24;
+        }

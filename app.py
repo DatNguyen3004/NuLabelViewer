@@ -4,64 +4,155 @@ from database import get_db_connection
 app = Flask(__name__) # 2. KHỞI TẠO BIẾN APP (Dòng này phải nằm trên các dòng @app.route)
 
 @app.route('/workspace')
-def workspace():
+@app.route('/workspace/<current_token>') # QUAN TRỌNG: Thêm dòng này để nhận token từ nút bấm
+def workspace(current_token=None):
     conn = get_db_connection()
     if not conn:
         return "Lỗi kết nối Database!"
     
     cursor = conn.cursor()
     
-    # LẤY BỘ ẢNH CHƯA DUYỆT: Dùng LEFT JOIN để tìm Scene nào chưa có trong Annotations
-    query = """
-                SELECT TOP 1 S.* FROM Scenes S
-                LEFT JOIN Annotations A ON S.SampleToken = A.SampleToken
-                WHERE A.SampleToken IS NULL
-            """
-    cursor.execute(query)
+    # 1. LẤY DANH SÁCH TẤT CẢ TOKEN (Sửa lỗi: Dùng SampleToken thay vì ID)
+    cursor.execute("SELECT SampleToken FROM Scenes ORDER BY SampleToken")
+    all_tokens = [row[0] for row in cursor.fetchall()]
+    total_count = len(all_tokens)
+
+    if total_count == 0:
+        return "<h1>Hệ thống chưa có dữ liệu ảnh!</h1>"
+
+    # 2. XÁC ĐỊNH TOKEN HIỆN TẠI
+    if not current_token:
+        # Tìm bộ ảnh CHƯA DUYỆT đầu tiên
+        cursor.execute("""
+            SELECT TOP 1 S.SampleToken FROM Scenes S
+            LEFT JOIN Annotations A ON S.SampleToken = A.SampleToken
+            WHERE A.SampleToken IS NULL
+            ORDER BY S.SampleToken
+        """)
+        row_init = cursor.fetchone()
+        current_token = row_init[0] if row_init else all_tokens[0]
+
+    # 3. TÍNH TOÁN VỊ TRÍ (INDEX) VÀ ĐIỀU HƯỚNG
+    try:
+        curr_index = all_tokens.index(current_token)
+    except ValueError:
+        curr_index = 0
+        current_token = all_tokens[0]
+
+    prev_token = all_tokens[curr_index - 1] if curr_index > 0 else all_tokens[0]
+    next_token = all_tokens[curr_index + 1] if curr_index < total_count - 1 else all_tokens[-1]
+
+    # 4. LẤY DỮ LIỆU 6 CAM VÀ THÔNG TIN CHI TIẾT
+    cursor.execute("SELECT * FROM Scenes WHERE SampleToken = ?", (current_token,))
     row = cursor.fetchone()
     
     if not row:
-        return "<h1>🎉 Tuyệt vời! Bạn đã duyệt hết dữ liệu rồi.</h1>"
+        return "<h1>Không tìm thấy dữ liệu cho Token này!</h1>"
+
+    # 5. TÍNH TIẾN ĐỘ (%)
+    cursor.execute("SELECT COUNT(*) FROM Annotations")
+    labeled_count = cursor.fetchone()[0] or 0
+    progress_pct = round((labeled_count / total_count) * 100, 1) if total_count > 0 else 0
+
+    # 3. TÌM TOKEN ĐIỀU HƯỚNG
+    curr_index = all_tokens.index(current_token)
     
-   # Map dữ liệu để đẩy ra HTML
+    first_token = all_tokens[0]
+    last_token  = all_tokens[-1]
+    prev_token  = all_tokens[curr_index - 1] if curr_index > 0 else first_token
+    next_token  = all_tokens[curr_index + 1] if curr_index < total_count - 1 else last_token
+    
+    # --- LOGIC XỬ LÝ ĐƯỜNG DẪN ẢNH ---
+    prefix = "Dataset/v1.0-mini/"
+    def fix_path(p):
+        return prefix + p.replace('\\', '/').strip() if p else ""
+
     cams = {
-        'front': row.ImgPath_Front,
-        'back': row.ImgPath_Back,
-        'front_left': row.ImgPath_FrontLeft,
-        'front_right': row.ImgPath_FrontRight,
-        'back_left': row.ImgPath_BackLeft,
-        'back_right': row.ImgPath_BackRight
+        'front': fix_path(row[2]), 'back': fix_path(row[3]),
+        'front_left': fix_path(row[4]), 'front_right': fix_path(row[5]),
+        'back_left': fix_path(row[6]), 'back_right': fix_path(row[7])
     }
-    token = row.SampleToken
+
+    # 6. THỐNG KÊ VẬT THỂ TRONG 6 CAM HIỆN TẠI
+    cursor.execute("""
+        SELECT Category, COUNT(*) 
+        FROM ObjectLabels 
+        WHERE SampleToken = ? 
+        GROUP BY Category
+    """, (current_token,))
+    rows_objects = cursor.fetchall()
+
+    object_summary = []
+    total_in_scene = 0
+    for r in rows_objects:
+        count = r[1]
+        total_in_scene += count
+        object_summary.append({
+            'name': r[0].split('.')[-1].upper(),
+            'count': count
+        })
     
     cursor.close()
     conn.close()
-    return render_template('workspace.html', cams=cams, token=token)
+
+    return render_template('workspace.html', 
+        token=current_token, cams=cams,
+        prev_token=prev_token, next_token=next_token, # Chỉ cần 2 biến này
+        curr_num=curr_index + 1, total_count=total_count,
+        progress_pct=progress_pct, object_summary=object_summary,
+        total_objects=total_in_scene)
 
 @app.route('/verify', methods=['POST'])
 def verify():
     token = request.form.get('sample_token')
-    status = request.form.get('status') # 1 cho Đúng, 2 cho Sai
-    
+    status = request.form.get('status')
+
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    try:
-        # Lưu kết quả kiểm định
-        # Trong app.py, hàm verify
-        cursor.execute("""
-            INSERT INTO Annotations (SampleToken, ReviewStatus, ReviewDate)
-            VALUES (?, ?, GETDATE())
-        """, (token, int(status)))
-        conn.commit()
-    except Exception as e:
-        print(f"Lỗi khi lưu: {e}")
-    finally:
-        cursor.close()
-        conn.close()
+    # 1. LƯU HOẶC CẬP NHẬT TRẠNG THÁI DUYỆT (Dùng logic MERGE đơn giản)
+    # Kiểm tra xem đã tồn tại chưa
+    cursor.execute("SELECT COUNT(*) FROM Annotations WHERE SampleToken = ?", (token,))
+    exists = cursor.fetchone()[0]
+        
+    # 1. LƯU DỮ LIỆU (Giữ nguyên)
+    cursor.execute("SELECT COUNT(*) FROM Annotations WHERE SampleToken = ?", (token,))
+    if cursor.fetchone()[0]:
+        cursor.execute("UPDATE Annotations SET ReviewStatus = ?, ReviewDate = GETDATE() WHERE SampleToken = ?", (int(status), token))
+    else:
+        cursor.execute("INSERT INTO Annotations (SampleToken, ReviewStatus, ReviewDate) VALUES (?, ?, GETDATE())", (token, int(status)))
+    conn.commit()
+
+    # 2. LOGIC NHẢY THÔNG MINH (SKIP NHỮNG THẰNG ĐÃ LÀM)
+    # Tìm thằng chưa làm đầu tiên có Token "lớn hơn" thằng vừa làm (theo thứ tự sắp xếp)
+    cursor.execute("""
+        SELECT TOP 1 S.SampleToken FROM Scenes S
+        LEFT JOIN Annotations A ON S.SampleToken = A.SampleToken
+        WHERE A.SampleToken IS NULL AND S.SampleToken > ?
+        ORDER BY S.SampleToken
+    """, (token,))
     
-    # Quay lại trang workspace để tự động hiện bộ ảnh tiếp theo
-    return redirect(url_for('workspace'))
+    next_row = cursor.fetchone()
+    
+    if not next_row:
+        # Nếu từ đây đến cuối không còn ai, quay lại tìm thằng chưa làm đầu tiên từ đầu danh sách (Smart Resume)
+        cursor.execute("""
+            SELECT TOP 1 S.SampleToken FROM Scenes S
+            LEFT JOIN Annotations A ON S.SampleToken = A.SampleToken
+            WHERE A.SampleToken IS NULL
+            ORDER BY S.SampleToken
+        """)
+        next_row = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if next_row:
+        # Nhảy tới thằng chưa làm gần nhất (Ví dụ: nhảy từ 25 vèo sang 27 vì 26 xong rồi)
+        return redirect(url_for('analytics', current_token=next_row[0]))
+    else:
+        # Nếu đã làm sạch sành sanh 404 bộ, báo hoàn thành hoặc về bộ cuối cùng
+        return redirect(url_for('analytics', current_token=token))
 
 @app.route('/login')
 def login():
@@ -144,12 +235,202 @@ def dashboard():
                            queue=queue_count)
 
 @app.route('/analytics')
-def analytics():
-    return render_template('analytics.html')
+@app.route('/analytics/<current_token>')
+def analytics(current_token=None):
+    conn = get_db_connection()
+    if not conn: return "Lỗi kết nối Database!"
+    cursor = conn.cursor()
+
+    # --- 1. LẤY TẤT CẢ TOKEN ĐỂ TÍNH THỨ TỰ (4/404) ---
+    cursor.execute("SELECT SampleToken FROM Scenes ORDER BY SampleToken")
+    all_tokens = [row[0] for row in cursor.fetchall()]
+    total_count = len(all_tokens)
+
+    # 2. LOGIC TỰ ĐỘNG QUAY LẠI BỘ CHƯA LÀM (SMART RESUME)
+    if not current_token:
+        # Tìm SampleToken đầu tiên chưa có trong bảng Annotations
+        cursor.execute("""
+            SELECT TOP 1 S.SampleToken FROM Scenes S
+            LEFT JOIN Annotations A ON S.SampleToken = A.SampleToken
+            WHERE A.SampleToken IS NULL
+            ORDER BY S.SampleToken
+        """)
+        row_pending = cursor.fetchone()
+
+        if row_pending:
+            current_token = row_pending[0]
+        elif all_tokens:
+            current_token = all_tokens[0] # Nếu đã làm hết thì mới lấy bộ 1
+
+    # Tính Index và các nút điều hướng
+    curr_num = 0
+    prev_token = next_token = None
+    if current_token:
+        curr_index = all_tokens.index(current_token)
+        curr_num = curr_index + 1
+        prev_token = all_tokens[curr_index - 1] if curr_index > 0 else all_tokens[0]
+        next_token = all_tokens[curr_index + 1] if curr_index < total_count - 1 else all_tokens[-1]
+
+    # --- 2. TIẾN ĐỘ TỔNG DỰ ÁN ---
+    cursor.execute("SELECT COUNT(*) FROM Annotations")
+    labeled_scenes = cursor.fetchone()[0] or 0
+    progress = {
+        'total': total_count,
+        'labeled': labeled_scenes,
+        'pending': total_count - labeled_scenes,
+        'pct': round((labeled_scenes / total_count * 100), 1) if total_count > 0 else 0
+    }
+
+    # --- 3. LẤY DỮ LIỆU CHI TIẾT CỦA SCENE ĐANG CHỌN ---
+    cursor.execute("SELECT * FROM Scenes WHERE SampleToken = ?", (current_token,))
+    row = cursor.fetchone()
+
+    prefix = "Dataset/v1.0-mini/"
+    def fix_path(p): return prefix + p.replace("\\", "/").strip() if p else ""
+
+    cams = None
+    scene_info = None
+    object_summary = []
+    total_scene_objects = 0
+
+    if row:
+        scene_info = {
+            'name': row[8],
+            'time': row[9].strftime('%Y-%m-%d %H:%M:%S') if row[9] else "N/A",
+            'weather': row[10],
+            'speed': row[11]
+        }
+        cams = {
+            "front": fix_path(row[2]), "back": fix_path(row[3]),
+            "front_left": fix_path(row[4]), "front_right": fix_path(row[5]),
+            "back_left": fix_path(row[6]), "back_right": fix_path(row[7])
+        }
+        # Đếm vật thể của riêng bộ này
+        cursor.execute("SELECT Category, COUNT(*) FROM ObjectLabels WHERE SampleToken = ? GROUP BY Category ORDER BY COUNT(*) DESC", (current_token,))
+        for r in cursor.fetchall():
+            total_scene_objects += r[1]
+            object_summary.append({'name': r[0].split('.')[-1].upper(), 'count': r[1]})
+
+    # --- 4. THỐNG KÊ BIỂU ĐỒ & LỊCH SỬ (Toàn dự án) ---
+    cursor.execute("SELECT ReviewStatus, COUNT(*) FROM Annotations GROUP BY ReviewStatus")
+    status_stats = {str(r[0]): r[1] for r in cursor.fetchall()}
+
+    cursor.execute("SELECT TOP 10 SampleToken, ReviewStatus, ReviewDate FROM Annotations ORDER BY ReviewDate DESC")
+    history = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('analytics.html',
+        progress=progress,
+        status_stats=status_stats,
+        object_summary=object_summary,
+        total_all_objects=total_scene_objects,
+        history=history,
+        cams=cams,
+        scene_info=scene_info,
+        token=current_token,     # Token hiện tại để gán vào Form Đúng/Sai
+        curr_num=curr_num,       # Số "4"
+        total_count=total_count, # Số "404"
+        prev_token=prev_token,
+        next_token=next_token
+    )
+
+@app.route('/search')
+def search():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return redirect(url_for('dashboard'))
+        
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Tìm kiếm theo SceneName hoặc SampleToken (dùng LIKE để tìm gần đúng)
+    # Nếu bro muốn tìm chính xác thì bỏ dấu % đi
+    cursor.execute("""
+        SELECT TOP 1 SampleToken 
+        FROM Scenes 
+        WHERE SceneName LIKE ? OR SampleToken LIKE ?
+    """, (f'%{query}%', f'%{query}%'))
+    
+    row = cursor.fetchone()
+    conn.close()
+    
+    if row:
+        # Nếu thấy, nhảy vào trang Analytics của bộ đó luôn
+        return redirect(url_for('analytics', current_token=row[0]))
+    else:
+        # Không thấy thì có thể về trang lỗi hoặc về Analytics mặc định
+        return redirect(url_for('analytics'))
 
 @app.route('/errors')
 def errors():
-    return render_template('errors.html')
+    # 1. Khởi tạo thông số phân trang
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # 2. Lấy các con số tổng quát
+    cursor.execute("SELECT COUNT(*) FROM Scenes")
+    total_scenes = cursor.fetchone()[0] or 404
+    
+    cursor.execute("SELECT COUNT(*) FROM Annotations WHERE ReviewStatus = 2")
+    pending_count = cursor.fetchone()[0] or 0 # Đây chính là số lỗi đang chờ
+
+    # 3. TÍNH TOÁN CHỈ SỐ SỨC KHỎE (Sửa lỗi NameError ở đây)
+    # Dùng đúng tên biến đã khai báo ở trên: pending_count và total_scenes
+    health_score = round(100 - (pending_count / total_scenes * 100))
+
+    # 4. TÍNH TOÁN PHÂN TRANG (Cần thiết cho template)
+    total_pages = (pending_count + per_page - 1) // per_page
+    start_idx = offset + 1
+    end_idx = min(offset + per_page, pending_count)
+
+    # 5. Lấy danh sách lỗi theo trang
+    cursor.execute("""
+        SELECT S.SampleToken, S.SceneName, A.ReviewDate 
+        FROM Scenes S
+        JOIN Annotations A ON S.SampleToken = A.SampleToken
+        WHERE A.ReviewStatus = 2
+        ORDER BY A.ReviewDate DESC
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """, (offset, per_page))
+    error_list = cursor.fetchall()
+
+    cursor.execute("SELECT COUNT(*) FROM Annotations WHERE ReviewStatus = 1")
+    resolved_count = cursor.fetchone()[0] or 0
+
+    cursor.close()
+    conn.close()
+
+    # 6. Xác định trạng thái sức khỏe
+    if health_score >= 85: health_status = "TỐT"
+    elif health_score >= 60: health_status = "ỔN ĐỊNH"
+    else: health_status = "RỦI RO"
+
+    # 7. TRẢ VỀ DỮ LIỆU
+    # Nếu là yêu cầu AJAX (chỉ lấy cái bảng)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render_template('_error_table.html', 
+                               error_list=error_list, page=page, 
+                               total_pages=total_pages, pending_count=pending_count,
+                               start_idx=start_idx, end_idx=end_idx)
+    
+    # Nếu load cả trang
+    return render_template('errors.html',
+                            health_score=health_score, 
+                            health_status=health_status,
+                            error_list=error_list,
+                            page=page,
+                            total_pages=total_pages,
+                            pending_count=pending_count,
+                            resolved_count=resolved_count,
+                            start_idx=start_idx, 
+                            end_idx=end_idx)
+
 
 @app.route('/all-scenes')
 def all_scenes():
@@ -161,6 +442,30 @@ def all_scenes():
     conn.close()
     
     return render_template('all_scenes.html', scenes=rows)
+
+@app.route('/load-more-activity')
+def load_more_activity():
+    offset = request.args.get('offset', 5, type=int)
+    limit = 5
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Query có tính toán DiffMinutes (hiệu số phút giữa hiện tại và lúc review)
+    query = """
+        SELECT SampleToken, ReviewStatus, 
+               DATEDIFF(MINUTE, ReviewDate, GETDATE()) as DiffMinutes
+        FROM Annotations
+        ORDER BY ReviewDate DESC
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """
+    cursor.execute(query, (offset, limit))
+    
+    # Chuyển kết quả thành Dictionary để Jinja2 dễ đọc (item.SampleToken)
+    columns = [column[0] for column in cursor.description]
+    history = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    
+    conn.close()
+    return render_template('_activity_rows.html', history=history)
     
 if __name__ == '__main__':
     app.run(debug=True)

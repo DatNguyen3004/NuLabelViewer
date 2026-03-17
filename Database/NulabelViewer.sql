@@ -35,3 +35,4 @@ drop table Scenes
 drop table Annotations
 
 select * from Scenes
+select * from Annotations

@@ -6,141 +6,7 @@
     <title>NuLabel - Quản lý lỗi v2.0</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { 
-            --primary-green: #1a7344; 
-            --light-green: #dcedc8;
-            --bg-light: #f8f9fa; 
-        }
-        body { background-color: var(--bg-light); font-family: 'Inter', sans-serif; font-size: 0.9rem; }
-        
-        /* Navbar & Input*/
-        .navbar-brand { font-weight: 800;}
-        .nav-link.active { color: var(--primary-green) !important; border-bottom: 2px solid var(--primary-green); }
-        .search-container { position: relative; width: 280px; }
-        .search-input { background: #f4f4f4; border: none; border-radius: 10px; padding: 8px 15px 8px 40px; font-size: 13px; width: 100%; }
-        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #9a9ea5; }
-
-        /* Stats Cards */
-        .stat-card { border: none; border-radius: 12px; transition: 0.3s; border-left: 4px solid #ddd; }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
-        .stat-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
-        .icon-box { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-
-        /* Table Badges */
-        .lvl-badge { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
-        .lvl-critical { background: #fff1f0; color: #cf1322; }
-        .lvl-high { background: #fffbe6; color: #d48806; }
-        .lvl-low { background: #e6f7ff; color: #096dd9; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-
-        /* Charts Section */
-        .chart-card { border: none; border-radius: 16px; background: white; }
-        .bar-stack { width: 30px; display: flex; flex-direction: column-reverse; gap: 2px; }
-        .bar-handled { background: var(--primary-green); border-radius: 2px; }
-        .bar-current { background: var(--light-green); border-radius: 2px; }
-        .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-
-        .health-score-card { background: var(--primary-green); color: white; }
-        .gauge-circle { width: 140px; height: 140px; border-radius: 50%; border: 12px solid rgba(255,255,255,0.2); border-top-color: white; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; }
-        .gauge-inner { transform: rotate(-45deg); text-align: center; }
-    
-        /* Chân bảng điều hướng */
-        .table-footer {
-            padding: 16px 24px;
-            background-color: #ffffff;
-            border-top: 1px solid #f1f1f1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .pagination-text {
-            font-size: 13px;
-            font-weight: 600;
-            color: #6c757d;
-        }
-
-        .btn-pagination {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #e0e0e0;
-            background: #fff;
-            border-radius: 8px;
-            color: #444;
-            transition: all 0.2s;
-        }
-
-        .btn-pagination:hover {
-            background: #f8f9fa;
-            border-color: #ccc;
-        }
-
-        .table thead th {
-            color: #9A9EA5 !important;
-            font-size: 11px !important;
-            font-weight: 700 !important;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            background-color: #fcfdfe;
-            border-bottom: 1px solid #f1f1f1;
-            padding: 15px 20px !important;
-        }
-        
-        /* Tùy chỉnh thanh bộ lọc */
-        .filter-container {
-            background: white;
-            padding: 12px 20px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .filter-box {
-            background-color: #f1f4f9;
-            border-radius: 10px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .filter-box:hover {
-            background-color: #e8ecf3;
-        }
-
-        .filter-label {
-            font-size: 11px;
-            font-weight: 800;
-            color: #8a92a6;
-            margin-right: 5px;
-            text-transform: uppercase;
-        }
-
-        .filter-value {
-            font-size: 13px;
-            font-weight: 700;
-            color: #1a1d1f;
-        }
-
-        .btn-clear-filters {
-            color: #2e7d32;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 13px;
-            margin-left: auto; /* Đẩy sang phải */
-        }
-
-        .btn-clear-filters:hover {
-            color: #1a5a24;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/errors.css') }}">
 </head>
 <body>
 
@@ -150,19 +16,12 @@
             <i class="fa-solid fa-square-n me-2 fs-3"></i> NuLabel <span class="fw-light ms-1 text-secondary">Viewer</span>
         </a>
         <div class="collapse navbar-collapse ms-5">
-            <ul class="navbar-nav me-auto gap-4 fw-bold">
-                <li class="nav-item"><a class="nav-link" href="#">Bảng điều khiển</a></li>
-                <li class="nav-item"><a class="nav-link active" href="#">Lỗi</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Nhật ký</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Cài đặt</a></li>
-            </ul>
-            <div class="d-flex align-items-center gap-3">
-                <div class="search-container">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" class="search-input" placeholder="Tìm kiếm nhanh lỗi...">
-                </div>
-                <img src="https://ui-avatars.com/api/?name=Admin&background=fbc02d&color=fff" class="rounded-circle shadow-sm" width="35">
-            </div>
+            <nav class="d-flex gap-4 small fw-bold text-muted">
+                <a href="{{ url_for('dashboard') }}" class="text-decoration-none text-muted">Trang chủ</a>
+                <a href="{{ url_for('workspace') }}" class="text-decoration-none text-muted">Hàng chờ duyệt</a>
+                <a href="{{ url_for('all_scenes') }}" class="text-decoration-none text-muted">Tập dữ liệu</a>
+                <a href="{{ url_for('errors') }}" class="text-success text-decoration-none border-bottom border-success border-2 pb-1">Báo cáo</a>
+            </nav>
         </div>
     </div>
 </nav>
@@ -173,54 +32,53 @@
             <h3 class="fw-bold">Quản lý lỗi</h3>
             <p class="text-muted">Theo dõi và phản hồi các sự cố kỹ thuật trong thời gian thực.</p>
         </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-secondary btn-sm px-3"><i class="fa-solid fa-download me-2"></i>Xuất CSV</button>
-            <button class="btn btn-success btn-sm px-3" style="background-color: var(--primary-green); border:none;"><i class="fa-solid fa-arrows-rotate me-2"></i>Quét hệ thống</button>
-        </div>
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card stat-card p-3 shadow-sm" style="border-left-color: #2e7d32;">
-                <div class="d-flex justify-content-between mb-2">
-                    <div class="icon-box bg-success-subtle text-success"><i class="fa-solid fa-check-double"></i></div>
-                    <span class="stat-badge bg-success-subtle text-success">+12% vs LW</span>
-                </div>
-                <small class="text-muted d-block mb-1">Tổng số lỗi hệ thống đã được đội ngũ kỹ thuật xử lý thành công.</small>
-                <h2 class="fw-bold mb-0">1,284</h2>
+    <div class="col-md-3">
+        <div class="card stat-card p-3 shadow-sm" style="border-left-color: #2e7d32; border-left-width: 5px;">
+            <div class="d-flex justify-content-between mb-2">
+                <div class="icon-box bg-success-subtle text-success p-2 rounded"><i class="fa-solid fa-check-double"></i></div>
+                <span class="stat-badge bg-success-subtle text-success px-2 py-1 rounded small" style="font-size: 10px;">+12% vs LW</span>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stat-card p-3 shadow-sm" style="border-left-color: #d32f2f;">
-                <div class="d-flex justify-content-between mb-2">
-                    <div class="icon-box bg-danger-subtle text-danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <span class="stat-badge bg-danger-subtle text-danger">-5% improved</span>
-                </div>
-                <small class="text-muted d-block mb-1">Danh sách các sự cố dán nhãn đang chờ kiểm duyệt và khắc phục.</small>
-                <h2 class="fw-bold mb-0">156</h2>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stat-card p-3 shadow-sm" style="border-left-color: #1976d2;">
-                <div class="d-flex justify-content-between mb-2">
-                    <div class="icon-box bg-primary-subtle text-primary"><i class="fa-solid fa-bullseye"></i></div>
-                    <span class="stat-badge bg-light border">Mục tiêu ngày</span>
-                </div>
-                <small class="text-muted d-block mb-1">Chỉ tiêu số lượng lỗi cần giải quyết trong ca làm việc hiện tại.</small>
-                <h2 class="fw-bold mb-0">42</h2>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stat-card p-3 shadow-sm" style="border-left-color: #fbc02d;">
-                <div class="d-flex justify-content-between mb-2">
-                    <div class="icon-box bg-warning-subtle text-warning"><i class="fa-regular fa-clock"></i></div>
-                    <span class="stat-badge bg-success-subtle text-success">8% faster</span>
-                </div>
-                <small class="text-muted d-block mb-1">Tốc độ trung bình từ lúc phát hiện đến khi lỗi được xác nhận.</small>
-                <h2 class="fw-bold mb-0">1.4 hrs</h2>
-            </div>
+            <small class="text-muted d-block mb-1">Tổng số lỗi hệ thống đã được đội ngũ kỹ thuật xử lý thành công.</small>
+            <h2 class="fw-bold mb-0">{{ "{:,}".format(resolved_count) }}</h2>
         </div>
     </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card p-3 shadow-sm" style="border-left-color: #d32f2f; border-left-width: 5px;">
+            <div class="d-flex justify-content-between mb-2">
+                <div class="icon-box bg-danger-subtle text-danger p-2 rounded"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <span class="stat-badge bg-danger-subtle text-danger px-2 py-1 rounded small" style="font-size: 10px;">-5% improved</span>
+            </div>
+            <small class="text-muted d-block mb-1">Danh sách các sự cố dán nhãn đang chờ kiểm duyệt và khắc phục.</small>
+            <h2 class="fw-bold mb-0">{{ "{:,}".format(pending_count) }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card p-3 shadow-sm" style="border-left-color: #1976d2; border-left-width: 5px;">
+            <div class="d-flex justify-content-between mb-2">
+                <div class="icon-box bg-primary-subtle text-primary p-2 rounded"><i class="fa-solid fa-bullseye"></i></div>
+                <span class="stat-badge bg-light border px-2 py-1 rounded small" style="font-size: 10px;">Mục tiêu ngày</span>
+            </div>
+            <small class="text-muted d-block mb-1">Chỉ tiêu số lượng lỗi cần giải quyết trong ca làm việc hiện tại.</small>
+            <h2 class="fw-bold mb-0">42</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card p-3 shadow-sm" style="border-left-color: #fbc02d; border-left-width: 5px;">
+            <div class="d-flex justify-content-between mb-2">
+                <div class="icon-box bg-warning-subtle text-warning p-2 rounded"><i class="fa-regular fa-clock"></i></div>
+                <span class="stat-badge bg-success-subtle text-success px-2 py-1 rounded small" style="font-size: 10px;">8% faster</span>
+            </div>
+            <small class="text-muted d-block mb-1">Tốc độ trung bình từ lúc phát hiện đến khi lỗi được xác nhận.</small>
+            <h2 class="fw-bold mb-0">{{ avg_speed }} hrs</h2>
+        </div>
+    </div>
+</div>
 
     <div class="filter-container shadow-sm border-0 mb-4">
         <div class="filter-box">
@@ -245,71 +103,85 @@
     </div>
 
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr>
-                            <th>Mã lỗi</th>
-                            <th>Loại ngoại lệ</th>
-                            <th>Mức độ</th>
-                            <th>Lần cuối</th>
-                            <th>Trạng thái</th>
-                            <th class="text-center">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="ps-4 text-muted">#ERR-9021</td>
-                            <td><strong>Malformed_ZPL_Sequence</strong><br><small class="text-muted">Lỗi cấu trúc header gói tin...</small></td>
-                            <td><span class="lvl-badge lvl-critical">NGHIÊM TRỌNG</span></td>
-                            <td>2 mins ago</td>
-                            <td><span class="status-dot" style="background: #ff4d4f;"></span> Chưa xử lý</td>
-                            <td class="text-center"><button class="btn btn-light btn-sm border fw-bold">Xem chi tiết</button></td>
-                        </tr>
-                        <tr>
-                            <td class="ps-4 text-muted">#ERR-8842</td>
-                            <td><strong>Printer_Timeout_Warning</strong><br><small class="text-muted">Mất kết nối không đồng bộ...</small></td>
-                            <td><span class="lvl-badge lvl-high">LỚN</span></td>
-                            <td>14 mins ago</td>
-                            <td><span class="status-dot" style="background: #faad14;"></span> Đang xử lý</td>
-                            <td class="text-center"><button class="btn btn-light btn-sm border fw-bold">Xem chi tiết</button></td>
-                        </tr>
-                        <tr>
-                            <td class="ps-4 text-muted">#ERR-7651</td>
-                            <td><strong>Auth_Token_Expired</strong><br><small class="text-muted">Phiên làm việc hết hạn...</small></td>
-                            <td><span class="lvl-badge lvl-low">NHỎ</span></td>
-                            <td>1 hr ago</td>
-                            <td><span class="status-dot" style="background: #52c41a;"></span> Đã xử lý</td>
-                            <td class="text-center"><button class="btn btn-light btn-sm border fw-bold">Xem chi tiết</button></td>
-                        </tr>
-                        <tr>
-                            <td class="ps-4 text-muted">#ERR-7501</td>
-                            <td><strong>Database_Deadlock</strong><br><small class="text-muted">Xung đột ghi dữ liệu...</small></td>
-                            <td><span class="lvl-badge lvl-critical">NGHIÊM TRỌNG</span></td>
-                            <td>2 hrs ago</td>
-                            <td><span class="status-dot" style="background: #ff4d4f;"></span> Chưa xử lý</td>
-                            <td class="text-center"><button class="btn btn-light btn-sm border fw-bold">Xem chi tiết</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Mã lỗi</th>
+                        <th>Loại ngoại lệ</th>
+                        <th>Mức độ</th>
+                        <th>Lần cuối</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in error_list %}
+                    <tr>
+                        <td class="ps-4 text-muted small">#ERR-{{ item[0][:4].upper() }}</td>
+                        <td>
+                            <strong>Label_Mismatch_Error</strong><br>
+                            <small class="text-muted">{{ item[1] }}</small> </td>
+                        <td>
+                            {% if loop.index % 3 == 0 %}
+                                <span class="lvl-badge lvl-critical">NGHIÊM TRỌNG</span>
+                            {% elif loop.index % 2 == 0 %}
+                                <span class="lvl-badge lvl-high">LỚN</span>
+                            {% else %}
+                                <span class="lvl-badge lvl-low">NHỎ</span>
+                            {% endif %}
+                        </td>
+                        <td class="small">{{ item[2].strftime('%H:%M') if item[2] else 'N/A' }}</td>
+                        <td>
+                            <span class="status-dot" style="background: #ff4d4f;"></span> 
+                            <span class="small">Chưa xử lý</span>
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ url_for('analytics', current_token=item[0]) }}" 
+                               class="btn btn-light btn-sm border fw-bold px-3">
+                                Xem chi tiết
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
 
-            <div class="table-footer">
-                <div class="pagination-text">
-                    Đang hiển thị 1-4 trong tổng số 156 lỗi
-                </div>
-                <div class="d-flex gap-2">
-                    <button class="btn-pagination" title="Trang trước">
-                        <i class="fa-solid fa-chevron-left small"></i>
-                    </button>
-                    <button class="btn-pagination" title="Trang sau">
-                        <i class="fa-solid fa-chevron-right small"></i>
-                    </button>
-                </div>
-            </div>
+                    {% if not error_list %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-circle-check fs-2 d-block mb-2"></i>
+                            Tuyệt vời! Không có lỗi nào cần xử lý.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
+
+        <div class="table-footer border-top">
+    <div class="pagination-text small text-muted">
+        Đang hiển thị {{ start_idx }}-{{ end_idx }} trong tổng số {{ pending_count }} lỗi
     </div>
+    <div class="d-flex gap-2">
+        {% if page > 1 %}
+        <a href="{{ url_for('errors', page=page-1) }}" class="btn-pagination text-decoration-none">
+            <i class="fa-solid fa-chevron-left small"></i>
+        </a>
+        {% else %}
+        <button class="btn-pagination opacity-50" disabled><i class="fa-solid fa-chevron-left small"></i></button>
+        {% endif %}
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('errors', page=page+1) }}" class="btn-pagination text-decoration-none text-dark">
+            <i class="fa-solid fa-chevron-right small"></i>
+        </a>
+        {% else %}
+        <button class="btn-pagination opacity-50" disabled><i class="fa-solid fa-chevron-right small"></i></button>
+        {% endif %}
+    </div>
+</div>
+    </div>
+</div>
 
     <div class="row g-4">
         <div class="col-md-8">
@@ -376,19 +248,21 @@
         </div>
         
         <div class="col-md-4">
-            <div class="card chart-card health-score-card p-4 d-flex flex-column align-items-center justify-content-center">
-                <h5 class="fw-bold mb-2">Chỉ số sức khỏe</h5>
-                <p class="small opacity-75 text-center mb-4">Dựa trên nhật ký hệ thống mới nhất.</p>
-                <div class="gauge-circle shadow">
-                    <div class="gauge-inner">
-                        <h2 class="fw-bold mb-0">82%</h2>
-                        <small class="fw-bold">ỔN ĐỊNH</small>
-                    </div>
-                </div>
+    <div class="card chart-card health-score-card p-4 d-flex flex-column align-items-center justify-content-center shadow">
+        <h5 class="fw-bold mb-2">Chỉ số sức khỏe</h5>
+        <p class="small opacity-75 text-center mb-4">Dựa trên nhật ký hệ thống mới nhất.</p>
+        
+        <div class="gauge-circle">
+            <div class="gauge-inner">
+                <h2 class="fw-bold mb-0">{{ health_score }}%</h2>
+                <small class="fw-bold text-uppercase">{{ health_status }}</small>
             </div>
         </div>
     </div>
 </div>
+    </div>
+</div>
 
 </body>
+
 </html>
