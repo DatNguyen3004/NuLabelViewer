@@ -1,5 +1,22 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, jsonify
 from database import get_db_connection
+import json
+import os
+import subprocess
+
+CONFIG_FILE = 'config.json'
+
+def get_dataset_path():
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'r') as f:
+            cfg = json.load(f)
+            p = cfg.get('dataset_path', '')
+            if p: return p
+    return r"D:\NuLabelViewer_Project\static\Dataset\v1.0-mini\v1.0-mini"
+
+def save_dataset_path(path):
+    with open(CONFIG_FILE, 'w') as f:
+        json.dump({'dataset_path': path}, f)
 
 app = Flask(__name__)
 app.secret_key = 'nulabel_secret_key' # Cần thiết để dùng Session
@@ -85,7 +102,7 @@ def workspace(current_token=None):
     next_token  = all_tokens[curr_index + 1] if curr_index < total_count - 1 else last_token
     
     # --- LOGIC XỬ LÝ ĐƯỜNG DẪN ẢNH ---
-    prefix = "Dataset/v1.0-mini/"
+    prefix = "/dataset/"
     def fix_path(p):
         return prefix + p.replace('\\', '/').strip() if p else ""
 
@@ -336,7 +353,7 @@ def analytics(current_token=None):
     cursor.execute("SELECT * FROM Scenes WHERE SampleToken = ?", (current_token,))
     row = cursor.fetchone()
 
-    prefix = "Dataset/v1.0-mini/"
+    prefix = "/dataset/"
     def fix_path(p): return prefix + p.replace("\\", "/").strip() if p else ""
 
     cams = None
@@ -522,6 +539,62 @@ def load_more_activity():
     
     conn.close()
     return render_template('_activity_rows.html', history=history)
+
+@app.route('/dataset/<path:filename>')
+def serve_dataset(filename):
+    dataset_path = get_dataset_path()
+    if not dataset_path or not os.path.exists(dataset_path):
+        return "Dataset not configured or missing", 404
+        
+    # dataset_path là thư mục chứa scene.json (VD: v1.0-mini/v1.0-mini)
+    # Thư mục ảnh (samples/) thường nằm ở thư mục cha (VD: v1.0-mini)
+    parent_path = os.path.dirname(dataset_path.rstrip('\\/'))
+    if os.path.exists(os.path.join(parent_path, "samples")):
+        serve_root = parent_path
+    else:
+        serve_root = dataset_path
+        
+    return send_from_directory(serve_root, filename)
+
+@app.route('/api/pick_folder', methods=['GET'])
+def pick_folder_api():
+    if not session.get('logged_in'):
+        return jsonify({"status": "error", "message": "Chưa đăng nhập!"}), 401
+    try:
+        script_path = os.path.join(app.root_path, 'pick_folder_script.py')
+        result = subprocess.run(['python', script_path], capture_output=True, text=True)
+        path = result.stdout.strip()
+        if path:
+            return jsonify({"status": "success", "path": path})
+        return jsonify({"status": "cancelled"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Phát sinh lỗi: {str(e)}"})
+
+@app.route('/api/import_dataset', methods=['POST'])
+def import_dataset():
+    if not session.get('logged_in'):
+        return jsonify({"status": "error", "message": "Chưa đăng nhập!"}), 401
     
+    data = request.get_json()
+    new_path = data.get('path', '').strip()
+    
+    if not new_path or not os.path.exists(new_path):
+        return jsonify({"status": "error", "message": "Đường dẫn không hợp lệ hoặc không tồn tại!"})
+    
+    # Kiểm tra xem có the scene.json trong path không để chắc chắn đây là dataset
+    if not os.path.exists(os.path.join(new_path, "scene.json")):
+        return jsonify({"status": "error", "message": "Không tìm thấy scene.json! Hãy chỉ định thư mục chứa các file json (VD: v1.0-mini/v1.0-mini)"})
+        
+    save_dataset_path(new_path)
+    
+    try:
+        # Chạy file final_import.py để nạp lại dữ liệu
+        # Vì dùng pyodbc, có thể gọi trực tiếp hàm nhưng an toàn nhất là chạy subprocess (để khỏi lỗi vòng lặp DB lock)
+        from final_import import full_reload_data
+        full_reload_data()
+        return jsonify({"status": "success", "message": "Import Dataset thành công! Hệ thống đang tải lại..."})
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Lỗi nạp dữ liệu: {str(e)}"})
+
 if __name__ == '__main__':
     app.run(debug=True)

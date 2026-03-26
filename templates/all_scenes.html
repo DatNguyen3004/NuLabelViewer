@@ -38,8 +38,8 @@
             <div class="col">
                 <div class="card h-100 scene-card shadow-sm">
                     <div class="img-container">
-                        <img src="{{ url_for('static', filename='Dataset/v1.0-mini/' + scene[1].replace('\\', '/')) }}"
-                            class="scene-img" alt="Front View">
+                        <img src="/dataset/{{ scene[1].replace('\\', '/') }}"
+                            class="card-img-top object-fit-cover" alt="Scene Image" style="height: 180px;">
                         <span class="position-absolute top-0 start-0 m-2 badge bg-dark opacity-75">
                             #{{ loop.index }}
                         </span>

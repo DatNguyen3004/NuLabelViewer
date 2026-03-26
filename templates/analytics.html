@@ -104,51 +104,33 @@
                         </div>
                     </div>
                 </div>
-
-                <style>
-                    /* Style bổ sung cho nút tua */
-                    .nav-btn-big {
-                        transition: all 0.2s ease;
-                        border-radius: 10px !important;
-                    }
-
-                    .nav-btn-big:hover {
-                        background-color: #343a40 !important;
-                        color: #fff !important;
-                        transform: translateY(-2px);
-                    }
-
-                    .nav-btn-big:active {
-                        transform: translateY(0);
-                    }
-                </style>
             </aside>
 
             <main class="scrollable-content">
                 <div class="row row-cols-1 row-cols-lg-2 g-4">
                     <div class="col">
                         <div class="camera-card"><span class="cam-tag">CAM 01: TRƯỚC</span><img
-                                src="{{ url_for('static', filename=cams.front) }}" class="camera-img"></div>
+                                src="{{ cams.front }}" class="camera-img"></div>
                     </div>
                     <div class="col">
                         <div class="camera-card"><span class="cam-tag">CAM 02: TRƯỚC TRÁI</span><img
-                                src="{{ url_for('static', filename=cams.front_left) }}" class="camera-img"></div>
+                                src="{{ cams.front_left }}" class="camera-img"></div>
                     </div>
                     <div class="col">
                         <div class="camera-card"><span class="cam-tag">CAM 03: TRƯỚC PHẢI</span><img
-                                src="{{ url_for('static', filename=cams.front_right) }}" class="camera-img"></div>
+                                src="{{ cams.front_right }}" class="camera-img"></div>
                     </div>
                     <div class="col">
                         <div class="camera-card"><span class="cam-tag">CAM 04: SAU</span><img
-                                src="{{ url_for('static', filename=cams.back) }}" class="camera-img"></div>
+                                src="{{ cams.back }}" class="camera-img"></div>
                     </div>
                     <div class="col">
                         <div class="camera-card"><span class="cam-tag">CAM 05: SAU TRÁI</span><img
-                                src="{{ url_for('static', filename=cams.back_left) }}" class="camera-img"></div>
+                                src="{{ cams.back_left }}" class="camera-img"></div>
                     </div>
                     <div class="col">
                         <div class="camera-card"><span class="cam-tag">CAM 06: SAU PHẢI</span><img
-                                src="{{ url_for('static', filename=cams.back_right) }}" class="camera-img"></div>
+                                src="{{ cams.back_right }}" class="camera-img"></div>
                     </div>
                 </div>
             </main>

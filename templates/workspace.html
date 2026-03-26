@@ -30,7 +30,7 @@
                             <span class="camera-label text-white position-absolute top-0 start-0 m-1 rounded">
                                 {{ key | upper }}
                             </span>
-                            <img src="{{ url_for('static', filename=path) }}" class="img-fluid w-100" alt="{{ key }}">
+                            <img src="{{ path }}" class="img-fluid w-100" alt="{{ key }}">
                         </div>
                     </div>
                     {% endfor %}
@@ -115,16 +115,7 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('keydown', function (e) {
-            if (e.key === "ArrowLeft") window.location.href = "{{ url_for('workspace', current_token=prev_token) }}";
-            if (e.key === "ArrowRight") window.location.href = "{{ url_for('workspace', current_token=next_token) }}";
-            if (e.key === "1") document.querySelector('button[value="1"]').click();
-            if (e.key === "2") document.querySelector('button[value="2"]').click();
-        });
-    </script>
-
+    <script src="{{ url_for('static', filename='js/workspace.js') }}"></script>
 </body>
 
 </html>

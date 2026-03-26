@@ -3,8 +3,21 @@ import pyodbc
 import math
 from datetime import datetime
 
+import os
+
 conn_str = r'DRIVER={SQL Server};SERVER=localhost\SQLEXPRESS;DATABASE=NuLabel_DB;Trusted_Connection=yes;'
-base_path = r"D:\NuLabelViewer_Project\static\Dataset\v1.0-mini\v1.0-mini\\"
+
+def get_base_path():
+    if os.path.exists("config.json"):
+        with open("config.json", 'r') as f:
+            p = json.load(f).get("dataset_path", "")
+            if p:
+                if not p.endswith('\\') and not p.endswith('/'):
+                    p += '\\'
+                return p
+    return r"D:\NuLabelViewer_Project\static\Dataset\v1.0-mini\v1.0-mini\\"
+
+base_path = get_base_path()
 
 def full_reload_data():
     try:

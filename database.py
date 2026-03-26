@@ -12,10 +12,16 @@ def get_db_connection():
     return pyodbc.connect(conn_str)
 
 def import_full_samples():
-    # Cần cả 2 file để vừa lấy mã Token, vừa lấy đường dẫn ảnh
-    sample_path = r"D:\NuLabelViewer_Project\static\Dataset\v1.0-mini\v1.0-mini\sample.json"
-    data_path = r"D:\NuLabelViewer_Project\static\Dataset\v1.0-mini\v1.0-mini\sample_data.json"
-    
+    # Lấy đường dẫn từ file config
+    base_path = ""
+    if os.path.exists("config.json"):
+        with open("config.json", 'r') as f:
+            base_path = json.load(f).get("dataset_path", "")
+    if base_path and not base_path.endswith('\\') and not base_path.endswith('/'):
+        base_path += '\\'
+        
+    sample_path = base_path + "sample.json"
+    data_path = base_path + "sample_data.json"
     if not os.path.exists(sample_path) or not os.path.exists(data_path):
         print("Lỗi: Thiếu file JSON trong Dataset!")
         return
